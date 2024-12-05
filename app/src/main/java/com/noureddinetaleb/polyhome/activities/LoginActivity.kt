@@ -20,7 +20,6 @@ import kotlinx.coroutines.launch
  */
 class LoginActivity : AppCompatActivity() {
     private val mainScope = MainScope()
-    private lateinit var token: String
 
     /**
      * Handle login request
@@ -40,6 +39,7 @@ class LoginActivity : AppCompatActivity() {
             if (responseCode == 200 && token?.token != null) {
                 saveToken(token.token)
                 val intent = Intent(this, HomeActivity::class.java)
+                intent.putExtra("TOKEN", token.token)
                 startActivity(intent)
                 Toast.makeText(this, "Connexion réussie", Toast.LENGTH_SHORT).show()
             } else if (responseCode == 404){
@@ -57,10 +57,12 @@ class LoginActivity : AppCompatActivity() {
     /**
      * Save token in the storage
      */
-    private fun saveToken(token: String){
-    val tokenStorge = TokenStorage(this)
+    private fun saveToken(token: String?) {
+        val tokenStorage = TokenStorage(this)
         mainScope.launch {
-            tokenStorge.write(token)
+            if (token != null) {
+                tokenStorage.write(token)
+            }
         }
     }
 
@@ -73,6 +75,7 @@ class LoginActivity : AppCompatActivity() {
             val savedToken = tokenStorage.read()
             if (savedToken.isNotEmpty()) {
                 val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+                intent.putExtra("TOKEN", savedToken)
                 startActivity(intent)
                 finish()
             }
@@ -86,6 +89,9 @@ class LoginActivity : AppCompatActivity() {
         loadToken()
     }
 
+    /**
+     * Create the activity
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
