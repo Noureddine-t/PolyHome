@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import com.noureddinetaleb.polyhome.R
 
 // TODO: Rename parameter arguments, choose names that match
@@ -36,6 +37,29 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val housesButton = view.findViewById<Button>(R.id.manage_houses_button)
+        val usersButton = view.findViewById<Button>(R.id.manage_users_button)
+
+        housesButton?.setOnClickListener {
+            val housesFragment = HousesFragment()
+            val transaction = requireActivity().supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, housesFragment)
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
+
+        usersButton?.setOnClickListener {
+            val usersFragment = UsersFragment()
+            val transaction = requireActivity().supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, usersFragment)
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
     }
 
     companion object {

@@ -6,7 +6,7 @@
     android:layout_height="176dp"
     android:gravity="bottom"
     android:padding="16dp"
-    android:background="@drawable/navbackgroundcolorjpg"
+    android:background="@color/buttons"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
@@ -15,17 +15,11 @@
         android:src="@drawable/user" />
 
     <TextView
+        android:id="@+id/txtUserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Username"
         android:textColor="@color/white"
         android:textStyle="bold" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        android:layout_marginBottom="16dp"/>
 </LinearLayout>

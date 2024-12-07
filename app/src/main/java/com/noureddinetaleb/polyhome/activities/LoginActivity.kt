@@ -12,10 +12,9 @@ import com.noureddinetaleb.polyhome.api.Api
 import com.noureddinetaleb.polyhome.data.LoginData
 import com.noureddinetaleb.polyhome.data.TokenData
 import com.noureddinetaleb.polyhome.storage.TokenStorage
+import com.noureddinetaleb.polyhome.storage.UsernameStorage
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import android.util.Log
-import com.noureddinetaleb.polyhome.activities.DevicesActivity
 
 /**
  * Login activity
@@ -27,9 +26,10 @@ class LoginActivity : AppCompatActivity() {
      * Handle login request
      */
     private fun login() {
-        val login = findViewById<EditText>(R.id.txtName).text.toString()
+        val login = findViewById<EditText>(R.id.txtUserName).text.toString()
         val password = findViewById<EditText>(R.id.txtPassword).text.toString()
         val data = LoginData(login, password)
+        saveUsername(login)
         Api().post<LoginData, TokenData>("https://polyhome.lesmoulinsdudev.com/api/users/auth", data, ::loginSuccess)
     }
 
@@ -40,8 +40,11 @@ class LoginActivity : AppCompatActivity() {
         runOnUiThread {
             if (responseCode == 200 && token?.token != null) {
                 saveToken(token.token)
-                val intent = Intent(this, DevicesActivity::class.java)
+                val intent = Intent(this, MainActivity::class.java)
+                val username = findViewById<EditText>(R.id.txtUserName).text.toString()
                 intent.putExtra("TOKEN", token.token)
+                intent.putExtra("USERNAME", username)
+
                 startActivity(intent)
                 Toast.makeText(this, "Connexion réussie", Toast.LENGTH_SHORT).show()
             } else if (responseCode == 404){
@@ -68,28 +71,46 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private fun saveUsername(username: String?) {
+        val usernameStorage = UsernameStorage(this)
+        mainScope.launch {
+            if (username != null) {
+                usernameStorage.write(username)
+            }
+        }
+    }
+
+
     /**
-     * Load token if it exists in the storage we skip the login page and go directly to the home page
+     *
      */
-    private fun loadToken(){
+    private fun loadTokenAndUsername(){
         val tokenStorage = TokenStorage(this)
+        val usernameStorage = UsernameStorage(this)
+
         mainScope.launch {
             val savedToken = tokenStorage.read()
-            if (savedToken.isNotEmpty()) {
-                val intent = Intent(this@LoginActivity, DevicesActivity::class.java)
+            val savedUsername = usernameStorage.read()
+
+            if (savedToken.isNotEmpty() && savedUsername.isNotEmpty()) {
+                val intent = Intent(this@LoginActivity, MainActivity::class.java)
                 intent.putExtra("TOKEN", savedToken)
-                Log.d("TOKEN", savedToken)
+                intent.putExtra("USERNAME", savedUsername)
+
                 startActivity(intent)
                 finish()
             }
         }
     }
+
+
+
     /**
      * Load token when the activity is resumed
      */
     override fun onResume() {
         super.onResume()
-        loadToken()
+        loadTokenAndUsername()
     }
 
     /**
@@ -98,7 +119,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        loadToken()
+
         findViewById<Button>(R.id.btnConect).setOnClickListener {
             login()
         }

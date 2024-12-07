@@ -10,7 +10,7 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/nav_home"
-            android:title="Aceuil"/>
+            android:title="Accueil"/>
 
         <item
             android:id="@+id/nav_houses"
@@ -20,7 +20,7 @@
         <item
             android:id="@+id/nav_users"
             android:icon="@drawable/nav_users"
-            android:title="Utilisateur"/>
+            android:title="Utilisateurs"/>
     </group>
     <item
         android:title="">
@@ -29,7 +29,7 @@
             <item
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/nav_logout"
-                android:title="Logout"/>
+                android:title="Se déconnecter"/>
         </menu>
 
     </item>
