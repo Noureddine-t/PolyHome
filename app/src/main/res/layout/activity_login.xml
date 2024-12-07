@@ -14,8 +14,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-        <!--app:srcCompat="@drawable/pizza"-->
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/app_icon"/>
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -72,6 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:backgroundTint="#9C27B0"
             android:text="Connexion" />
 
         <TextView
@@ -88,6 +89,7 @@
             android:id="@+id/btnGoToRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="#9C27B0"
             android:onClick="registerNewAccount"
             android:text="Créer un compte" />
     </LinearLayout>

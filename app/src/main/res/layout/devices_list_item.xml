@@ -8,7 +8,7 @@
         android:layout_width="401dp"
         android:layout_height="74dp"
         android:orientation="horizontal"
-        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteX="5dp"
         tools:layout_editor_absoluteY="1dp">
 
         <LinearLayout

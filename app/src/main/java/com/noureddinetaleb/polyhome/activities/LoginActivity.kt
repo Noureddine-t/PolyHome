@@ -14,6 +14,8 @@ import com.noureddinetaleb.polyhome.data.TokenData
 import com.noureddinetaleb.polyhome.storage.TokenStorage
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import android.util.Log
+import com.noureddinetaleb.polyhome.activities.DevicesActivity
 
 /**
  * Login activity
@@ -38,7 +40,7 @@ class LoginActivity : AppCompatActivity() {
         runOnUiThread {
             if (responseCode == 200 && token?.token != null) {
                 saveToken(token.token)
-                val intent = Intent(this, HomeActivity::class.java)
+                val intent = Intent(this, DevicesActivity::class.java)
                 intent.putExtra("TOKEN", token.token)
                 startActivity(intent)
                 Toast.makeText(this, "Connexion réussie", Toast.LENGTH_SHORT).show()
@@ -74,8 +76,9 @@ class LoginActivity : AppCompatActivity() {
         mainScope.launch {
             val savedToken = tokenStorage.read()
             if (savedToken.isNotEmpty()) {
-                val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+                val intent = Intent(this@LoginActivity, DevicesActivity::class.java)
                 intent.putExtra("TOKEN", savedToken)
+                Log.d("TOKEN", savedToken)
                 startActivity(intent)
                 finish()
             }
@@ -95,9 +98,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
         loadToken()
-
         findViewById<Button>(R.id.btnConect).setOnClickListener {
             login()
         }
