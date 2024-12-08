@@ -8,6 +8,6 @@ package com.noureddinetaleb.polyhome.data
  * @constructor Create empty Login data
  */
 data class LoginData(
-    val login : String,
-    val password : String
+    val login: String,
+    val password: String
 )

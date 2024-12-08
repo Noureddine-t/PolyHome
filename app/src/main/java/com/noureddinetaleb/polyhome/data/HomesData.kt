@@ -8,5 +8,5 @@ package com.noureddinetaleb.polyhome.data
  */
 data class HomesData(
     val houseId: Int,
-    val owner : Boolean,
+    val owner: Boolean,
 )

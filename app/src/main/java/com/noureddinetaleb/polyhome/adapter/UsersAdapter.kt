@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import com.noureddinetaleb.polyhome.R
 import com.noureddinetaleb.polyhome.data.UsersWithAccessData
 
-class UsersAdapter (private val context: Context, private val dataSource: ArrayList<UsersWithAccessData>) : BaseAdapter() {
+class UsersAdapter(private val context: Context, private val dataSource: ArrayList<UsersWithAccessData>) :
+    BaseAdapter() {
     private val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
     override fun getItemId(position: Int): Long = position.toLong()
@@ -19,9 +19,11 @@ class UsersAdapter (private val context: Context, private val dataSource: ArrayL
     override fun getCount(): Int = dataSource.size
 
     private var userActionListener: OnUserActionListener? = null
+
     interface OnUserActionListener {
         fun onRemoveUser(userLogin: String)
     }
+
     fun setUserActionListener(listener: OnUserActionListener) {
         this.userActionListener = listener
     }
@@ -42,7 +44,7 @@ class UsersAdapter (private val context: Context, private val dataSource: ArrayL
         }
 
         btnRemove.setOnClickListener {
-                userActionListener?.onRemoveUser(users.userLogin)
+            userActionListener?.onRemoveUser(users.userLogin)
         }
         return rowView
     }

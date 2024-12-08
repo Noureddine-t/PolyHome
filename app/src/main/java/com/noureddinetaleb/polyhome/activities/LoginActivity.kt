@@ -48,13 +48,12 @@ class LoginActivity : AppCompatActivity() {
 
                 startActivity(intent)
                 Toast.makeText(this, "Connexion réussie", Toast.LENGTH_SHORT).show()
-            } else if (responseCode == 404){
-                Toast.makeText(this, "Aucun utilisateur ne correspond aux identifiants donnés", Toast.LENGTH_SHORT).show()
-            }
-            else if(responseCode==500){
+            } else if (responseCode == 404) {
+                Toast.makeText(this, "Aucun utilisateur ne correspond aux identifiants donnés", Toast.LENGTH_SHORT)
+                    .show()
+            } else if (responseCode == 500) {
                 Toast.makeText(this, " Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
-            }
-            else{
+            } else {
                 Toast.makeText(this, "Erreur lors de la connexion", Toast.LENGTH_SHORT).show()
             }
         }
@@ -62,6 +61,8 @@ class LoginActivity : AppCompatActivity() {
 
     /**
      * Save token in the storage
+     * @param token the token to save
+     * @see TokenStorage class handling token storage
      */
     private fun saveToken(token: String?) {
         val tokenStorage = TokenStorage(this)
@@ -72,6 +73,11 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Save username in the storage
+     * @param username the username to save
+     * @see UsernameStorage class handling username storage
+     */
     private fun saveUsername(username: String?) {
         val usernameStorage = UsernameStorage(this)
         mainScope.launch {
@@ -83,9 +89,13 @@ class LoginActivity : AppCompatActivity() {
 
 
     /**
-     *
+     * Load token and username from storage
+     * Redirect to main activity if token and username are found
+     * @see TokenStorage class handling token storage
+     * @see UsernameStorage class handling username storage
+     * @see MainActivity class handling main activity
      */
-    private fun loadTokenAndUsername(){
+    private fun loadTokenAndUsername() {
         val tokenStorage = TokenStorage(this)
         val usernameStorage = UsernameStorage(this)
 
@@ -105,7 +115,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-
     /**
      * Load token when the activity is resumed
      */
@@ -116,6 +125,7 @@ class LoginActivity : AppCompatActivity() {
 
     /**
      * Create the activity
+     * @param savedInstanceState the saved instance state
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) // Prevent Dark Mode to being forced on the app.
@@ -130,9 +140,10 @@ class LoginActivity : AppCompatActivity() {
 
     /**
      * Redirect to the register page on click
+     * @param view the view clicked
+     * @see RegisterActivity class handling register activity
      */
-    public fun registerNewAccount(view: View)
-    {
+    public fun registerNewAccount(view: View) {
         val intent = Intent(this, RegisterActivity::class.java);
         startActivity(intent);
     }

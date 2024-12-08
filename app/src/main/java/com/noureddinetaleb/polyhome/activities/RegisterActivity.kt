@@ -1,7 +1,6 @@
 package com.noureddinetaleb.polyhome.activities
 
 import android.content.Intent
-import android.media.session.MediaSession.Token
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -11,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.noureddinetaleb.polyhome.R
 import com.noureddinetaleb.polyhome.api.Api
 import com.noureddinetaleb.polyhome.data.RegisterData
-import com.noureddinetaleb.polyhome.storage.TokenStorage
 
 /**
  * Register activity
@@ -21,12 +19,16 @@ class RegisterActivity : AppCompatActivity() {
     /**
      * Handle register request
      */
-    private fun register()
-    {
+    private fun register() {
         val login = findViewById<EditText>(R.id.txtRegisterName).text.toString()
         val password = findViewById<EditText>(R.id.txtRegisterPassword).text.toString()
         val registerData = RegisterData(login, password)
-        Api().post("https://polyhome.lesmoulinsdudev.com/api/users/register", registerData, ::registerSuccess, intent.getStringExtra("TOKEN"))
+        Api().post(
+            "https://polyhome.lesmoulinsdudev.com/api/users/register",
+            registerData,
+            ::registerSuccess,
+            intent.getStringExtra("TOKEN")
+        )
     }
 
     /**
@@ -38,13 +40,11 @@ class RegisterActivity : AppCompatActivity() {
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
                 Toast.makeText(this, "Le compte a bien été créé", Toast.LENGTH_SHORT).show()
-            }
-            else if(responseCode == 409){
+            } else if (responseCode == 409) {
                 Toast.makeText(this, " Le login est déjà utilisé par un autre compte", Toast.LENGTH_SHORT).show()
-            }
-            else if (responseCode == 500)
+            } else if (responseCode == 500)
                 Toast.makeText(this, "Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
-            else{
+            else {
                 Toast.makeText(this, "Erreur lors de l'inscription", Toast.LENGTH_SHORT).show()
             }
         }
@@ -65,8 +65,7 @@ class RegisterActivity : AppCompatActivity() {
     /**
      * Go to login activity
      */
-    public fun goToLogin(view: View)
-    {
+    public fun goToLogin(view: View) {
         finish();
     }
 }

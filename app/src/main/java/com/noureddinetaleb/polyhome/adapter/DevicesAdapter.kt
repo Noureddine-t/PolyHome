@@ -9,7 +9,7 @@ import android.widget.TextView
 import com.noureddinetaleb.polyhome.R
 import com.noureddinetaleb.polyhome.data.DevicesData
 
-class DevicesAdapter (private val context: Context, private val dataSource: ArrayList<DevicesData>) : BaseAdapter() {
+class DevicesAdapter(private val context: Context, private val dataSource: ArrayList<DevicesData>) : BaseAdapter() {
     private val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
     override fun getItemId(position: Int): Long = position.toLong()

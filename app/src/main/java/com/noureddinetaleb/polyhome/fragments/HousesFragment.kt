@@ -1,7 +1,6 @@
 package com.noureddinetaleb.polyhome.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +9,7 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.noureddinetaleb.polyhome.R
 import com.noureddinetaleb.polyhome.adapter.DevicesAdapter
 import com.noureddinetaleb.polyhome.api.Api
@@ -22,18 +22,6 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-
-/**
- * A simple [Fragment] subclass.
- * Use the [HousesFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class HousesFragment : Fragment() {
 
     private val homes = ArrayList<HomesData>()
@@ -63,15 +51,16 @@ class HousesFragment : Fragment() {
                     homes.addAll(loadedHomes)
                     updateHomesList()
                     Toast.makeText(requireContext(), "Requête acceptée", Toast.LENGTH_SHORT).show()
-                }
-                else if(responseCode == 400){
+                } else if (responseCode == 400) {
                     Toast.makeText(requireContext(), "Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
-                }
-                else if(responseCode==403){
+                } else if (responseCode == 403) {
                     Toast.makeText(requireContext(), "Accès interdit (token invalide)", Toast.LENGTH_SHORT).show()
-                }
-                else{
-                    Toast.makeText(requireContext(), "Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Une erreur s’est produite au niveau du serveur",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -100,7 +89,11 @@ class HousesFragment : Fragment() {
      * Load devices
      */
     private fun loadDevices(houseId: Int) {
-        Api().get<DevicesListData>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices", ::loadDevicesSuccess, token)
+        Api().get<DevicesListData>(
+            "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices",
+            ::loadDevicesSuccess,
+            token
+        )
     }
 
     /**
@@ -136,16 +129,33 @@ class HousesFragment : Fragment() {
         }
     }
 
+    /**
+     * Initialize devices list
+     */
     private fun initializeDevicesList() {
         val ordersListView = view?.findViewById<ListView>(R.id.lstDevices)
         ordersListView?.adapter = devicesAdapter
     }
 
+    /**
+     * Handle homes fragment creation
+     * @param inflater layout inflater
+     * @param container view group
+     * @param savedInstanceState saved instance state
+     * @return view
+     *       fragment view
+     *       null if an exception is caught
+     * @see loadHomes
+     * @see initializeSpinners
+     * @see initializeDevicesList
+     * @see loadDevices
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view= inflater.inflate(R.layout.fragment_houses, container, false)
+        // managing houses display
+        val view = inflater.inflate(R.layout.fragment_houses, container, false)
         homesAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, homes)
         mainScope.launch {
             token = TokenStorage(requireContext()).read()
@@ -155,12 +165,13 @@ class HousesFragment : Fragment() {
             initializeDevicesList()
         }
 
+        //managing devices display based on selected house
         val btnValidate = view.findViewById<Button>(R.id.btnValidate)
         btnValidate.setOnClickListener {
             val spinHomes = view.findViewById<Spinner>(R.id.spinHomes)
             val selectedHome = spinHomes?.selectedItem as? HomesData
             val houseId = selectedHome?.houseId
-            loadDevices(houseId?:-1)
+            loadDevices(houseId ?: -1)
         }
         return view
     }

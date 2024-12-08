@@ -5,9 +5,9 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
@@ -22,9 +22,12 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var drawerLayout: DrawerLayout
+    private val mainScope = MainScope()
+
 
     /**
-     * Create the activity
+     * Create the activity for drawer layout
+     * @param savedInstanceState the saved instance state
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +57,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val txtUserName: TextView = headerView.findViewById(R.id.txtUserName)
         txtUserName.text = username
     }
+
+    private var houseId: Int = -1
+
+    /**
+     * Set houseId
+     * @param data the houseId
+     */
+    fun setHouseId(data: Int) {
+        houseId = data
+    }
+
+    /**
+     * Get houseId
+     * @return houseId
+     */
+    fun getHouseId(): Int {
+        return houseId
+    }
+
     /**
      * Handle navigation item selection
      * @param item selected item
@@ -61,15 +83,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      *        false otherwise
      */
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.nav_home -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, HomeFragment()).commit()
-            R.id.nav_houses -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, HousesFragment()).commit()
-            R.id.nav_users -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, UsersFragment()).commit()
+        val homeFragment =
+            supportFragmentManager.findFragmentByTag(HomeFragment::class.java.simpleName) as? HomeFragment
+
+        val fragment = when (item.itemId) {
+            R.id.nav_home -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, HomeFragment())
+                .commit()
+
+            R.id.nav_houses -> supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, HousesFragment()).commit()
+
+            R.id.nav_users -> supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, UsersFragment()).commit()
+
             R.id.nav_logout -> {
                 logout()
                 Toast.makeText(this, "Déconnexion avec succès !", Toast.LENGTH_SHORT).show()
+                return true
             }
+
+            else -> null
         }
+
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
@@ -89,8 +124,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private val mainScope = MainScope()
-
+    /**
+     * Handle logout
+     * Redirect to login activity
+     * Clear token storage
+     * Clear username storage
+     */
     private fun logout() {
         val tokenStorage = TokenStorage(this)
         mainScope.launch {
