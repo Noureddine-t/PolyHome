@@ -1,42 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="10dp"
+    android:gravity="center_vertical">
 
-    <LinearLayout
-        android:layout_width="401dp"
-        android:layout_height="74dp"
-        android:orientation="horizontal"
-        tools:layout_editor_absoluteX="5dp"
-        tools:layout_editor_absoluteY="1dp">
+    <TextView
+        android:id="@+id/deviceName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:text="Device Name"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingEnd="10dp" />
 
-        <LinearLayout
-            android:layout_width="153dp"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+    <Button
+        android:id="@+id/openButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ouvrir"
+        android:minWidth="80dp" />
 
-            <TextView
-                android:id="@+id/lblRecipe"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="50px"
-                android:text="TextView" />
+    <Button
+        android:id="@+id/closeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fermer"
+        android:layout_marginStart="10dp"
+        android:minWidth="80dp" />
 
-            <TextView
-                android:id="@+id/lblDough"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-        </LinearLayout>
+    <Button
+        android:id="@+id/stopButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Arrêter"
+        android:layout_marginStart="10dp"
+        android:minWidth="80dp" />
 
-        <TextView
-            android:id="@+id/lblOrderDate"
-            android:layout_width="187dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="80px"
-            android:layout_weight="1"
-            android:text="TextView" />
-
-    </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

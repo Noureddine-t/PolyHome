@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.noureddinetaleb.polyhome.R
 import com.noureddinetaleb.polyhome.api.Api
 import com.noureddinetaleb.polyhome.data.LoginData
@@ -117,6 +118,8 @@ class LoginActivity : AppCompatActivity() {
      * Create the activity
      */
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) // Prevent Dark Mode to being forced on the app.
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
