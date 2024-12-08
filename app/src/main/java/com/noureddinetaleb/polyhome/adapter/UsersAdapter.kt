@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import com.noureddinetaleb.polyhome.R
 import com.noureddinetaleb.polyhome.data.UsersWithAccessData
 
@@ -34,14 +35,15 @@ class UsersAdapter (private val context: Context, private val dataSource: ArrayL
 
         if (users.owner == 1) {
             userView.text = users.userLogin + " (Propriétaire)"
-        } else{
-        userView.text = users.userLogin
+            btnRemove.isEnabled = false
+        } else {
+            userView.text = users.userLogin
+            btnRemove.isEnabled = true
         }
 
         btnRemove.setOnClickListener {
-            userActionListener?.onRemoveUser(users.userLogin)
+                userActionListener?.onRemoveUser(users.userLogin)
         }
-
         return rowView
     }
 }
