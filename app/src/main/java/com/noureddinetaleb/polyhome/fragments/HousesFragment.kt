@@ -130,7 +130,7 @@ class HousesFragment : Fragment() {
         }
     }
 
-    private fun initializeOrdersList() {
+    private fun initializeDevicesList() {
         val ordersListView = view?.findViewById<ListView>(R.id.lstDevices)
         ordersListView?.adapter = devicesAdapter
     }
@@ -152,28 +152,23 @@ class HousesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view= inflater.inflate(R.layout.fragment_houses, container, false)
         homesAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, homes)
-        MainScope().launch {
+        mainScope.launch {
             token = TokenStorage(requireContext()).read()
             loadHomes()
             initializeSpinners()
             devicesAdapter = DevicesAdapter(requireContext(), devices)
-            initializeOrdersList()
+            initializeDevicesList()
         }
 
         val btnValidate = view.findViewById<Button>(R.id.btnValidate)
         btnValidate.setOnClickListener {
             val spinHomes = view.findViewById<Spinner>(R.id.spinHomes)
             val selectedHome = spinHomes?.selectedItem as? HomesData
+            val houseId = selectedHome?.houseId
+            loadDevices(houseId?:-1)
 
-            if (selectedHome != null) {
-                val houseId = selectedHome.houseId
-                loadDevices(houseId)
-            } else {
-                Toast.makeText(requireContext(), "Veuillez sélectionner une maison", Toast.LENGTH_SHORT).show()
-            }
         }
         return view
     }

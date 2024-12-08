@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.HousesFragment">
 
     <LinearLayout
@@ -48,7 +47,16 @@
             android:backgroundTint="@color/buttons"
             android:text="Valider" />
 
-        <!-- ListView ajouté sous le bouton -->
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Listes des appareils"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:paddingTop="20dp"/>
         <ListView
             android:id="@+id/lstDevices"
             android:layout_width="match_parent"
