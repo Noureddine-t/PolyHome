@@ -77,6 +77,9 @@ class HousesFragment : Fragment() {
         }
     }
 
+    /**
+     * Update homes list
+     */
     private fun updateHomesList() {
         mainScope.launch {
             withContext(Dispatchers.Main) {
@@ -85,6 +88,9 @@ class HousesFragment : Fragment() {
         }
     }
 
+    /**
+     * Initialize spinners for homes
+     */
     private fun initializeSpinners() {
         val spinHomes = view?.findViewById<Spinner>(R.id.spinHomes)
         spinHomes?.adapter = homesAdapter
@@ -168,7 +174,6 @@ class HousesFragment : Fragment() {
             val selectedHome = spinHomes?.selectedItem as? HomesData
             val houseId = selectedHome?.houseId
             loadDevices(houseId?:-1)
-
         }
         return view
     }

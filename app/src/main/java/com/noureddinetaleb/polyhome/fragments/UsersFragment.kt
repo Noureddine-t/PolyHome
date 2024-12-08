@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.ListView
 import android.widget.Spinner
 import android.widget.Toast
@@ -13,6 +14,7 @@ import com.noureddinetaleb.polyhome.R
 import com.noureddinetaleb.polyhome.adapter.UsersAdapter
 import com.noureddinetaleb.polyhome.api.Api
 import com.noureddinetaleb.polyhome.data.HomesData
+import com.noureddinetaleb.polyhome.data.SendUserLogin
 import com.noureddinetaleb.polyhome.data.UsersLoginData
 import com.noureddinetaleb.polyhome.data.UsersWithAccessData
 import com.noureddinetaleb.polyhome.storage.TokenStorage
@@ -43,11 +45,18 @@ class UsersFragment : Fragment() {
     private val usersWithAccess = ArrayList<UsersWithAccessData>()
     private lateinit var usersWithAccessAdapter: UsersAdapter
 
+    private var houseId = -1
 
+    /**
+     * Load users in order to get login
+     */
     private fun loadUsers() {
         Api().get<List<UsersLoginData>>("https://polyhome.lesmoulinsdudev.com/api/users", ::loadUsersSuccess)
     }
 
+    /**
+     * Handle users loading success
+     */
     private fun loadUsersSuccess(responseCode: Int, loadedUsers: List<UsersLoginData>?) {
         mainScope.launch {
             withContext(Dispatchers.Main) {
@@ -67,6 +76,9 @@ class UsersFragment : Fragment() {
         }
     }
 
+    /**
+     * Update users list
+     */
     private fun updateUsersList() {
         mainScope.launch {
             withContext(Dispatchers.Main) {
@@ -75,13 +87,16 @@ class UsersFragment : Fragment() {
         }
     }
 
+    /**
+     * Initialize spinners for users
+     */
     private fun initializeSpinners() {
         val spinHomes = view?.findViewById<Spinner>(R.id.spinUsers)
         spinHomes?.adapter = usersAdapter
     }
 
     /**
-     * Load homes in order to get homeId
+     * Load homes in order to get homeId to manage users with access
      */
     private fun loadHomes() {
         Api().get<List<HomesData>>("https://polyhome.lesmoulinsdudev.com/api/houses", ::loadHomesSuccess, token)
@@ -98,7 +113,7 @@ class UsersFragment : Fragment() {
                     homes.clear()
                     homes.addAll(loadedHomes)
                     Toast.makeText(requireContext(), "Requête acceptée", Toast.LENGTH_SHORT).show()
-                    val houseId = homes.find { it.owner }?.houseId ?: -1
+                    houseId = homes.find { it.owner }?.houseId ?: -1
                     loadUsersWithAccess(houseId)
                 }
                 else if(responseCode == 400){
@@ -114,10 +129,16 @@ class UsersFragment : Fragment() {
         }
     }
 
+    /**
+     * Load users with access
+     */
     private fun loadUsersWithAccess(houseId : Int) {
         Api().get<List<UsersWithAccessData>>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", ::loadUsersWithAccessSuccess,token)
     }
 
+    /**
+     * Handle 'users with access' loading success
+     */
     private fun loadUsersWithAccessSuccess(responseCode: Int, loadedUsers: List<UsersWithAccessData>?) {
         mainScope.launch {
             withContext(Dispatchers.Main) {
@@ -137,10 +158,105 @@ class UsersFragment : Fragment() {
         }
     }
 
+    /**
+     * Initialize users with access list
+     */
     private fun initializeUsersWithAccessList() {
         val usersWithAccessListView = view?.findViewById<ListView>(R.id.lstUsersWithAccess)
         usersWithAccessListView?.adapter = usersWithAccessAdapter
     }
+
+    /**
+     * Update users with access list
+     */
+    private fun updateAccess(selectedUser: String) {
+        val user = SendUserLogin(selectedUser)
+        if (houseId != -1) {
+            Api().post<SendUserLogin>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", user, ::updateAccessSuccess, token)
+        }
+        else {
+            mainScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Aucune maison n'a été trouvée", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    /**
+     * Handle 'update access' response then
+     * Load users with access
+     */
+    private fun updateAccessSuccess(responseCode: Int) {
+        mainScope.launch {
+            withContext(Dispatchers.Main) {
+                if (responseCode == 200) {
+                    loadUsersWithAccess(houseId)
+                    Toast.makeText(requireContext(), "Accès accordé", Toast.LENGTH_SHORT).show()
+                }
+                else if(responseCode == 400){
+                    Toast.makeText(requireContext(), "Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
+                }
+                else if (responseCode == 403) {
+                    Toast.makeText(requireContext(), "Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison)", Toast.LENGTH_SHORT).show()
+                }
+                else if (responseCode == 500) {
+                    Toast.makeText(requireContext(), "Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    Toast.makeText(requireContext(), "Erreur est survenue", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+        }
+    }
+
+    /**
+     * Remove user access to your house
+     */
+    fun removeUserAccess(selectedUser: String){
+        val user = SendUserLogin(selectedUser)
+        if (houseId != -1) {
+            Api().delete<SendUserLogin>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", user, ::removeUserAccessSuccess, token)
+        }
+        else {
+            mainScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Aucune maison n'a été trouvée", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    /**
+     * Handle 'remove user access' response then
+     * Load users with access
+     */
+    private fun removeUserAccessSuccess(responseCode: Int) {
+        mainScope.launch {
+            withContext(Dispatchers.Main) {
+                if (responseCode == 200) {
+                    loadUsersWithAccess(houseId)
+                    Toast.makeText(requireContext(), "Suppression réalisée", Toast.LENGTH_SHORT).show()
+                }
+                else if(responseCode == 400){
+                    Toast.makeText(requireContext(), "Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
+                }
+                else if (responseCode == 403) {
+                    Toast.makeText(requireContext(), "Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison)", Toast.LENGTH_SHORT).show()
+                }
+                else if (responseCode == 500) {
+                    Toast.makeText(requireContext(), "Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    Toast.makeText(requireContext(), "Erreur est survenue", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+        }
+    }
+
+
 
 
     // TODO: Rename and change types of parameters
@@ -168,8 +284,20 @@ class UsersFragment : Fragment() {
             token = TokenStorage(requireContext()).read()
             loadHomes()
             usersWithAccessAdapter = UsersAdapter(requireContext(), usersWithAccess)
+            usersWithAccessAdapter.setUserActionListener(object : UsersAdapter.OnUserActionListener  {
+                override fun onRemoveUser(userLogin: String) {
+                    removeUserAccess(userLogin)
+                }
+            })
             initializeUsersWithAccessList()
         }
+        val btnAdd = view.findViewById<Button>(R.id.btnAddUser)
+        btnAdd.setOnClickListener {
+            val spinUsers = view.findViewById<Spinner>(R.id.spinUsers)
+            val selectedUser = spinUsers?.selectedItem as? String
+            updateAccess(selectedUser?:"")
+        }
+
         return view
     }
 

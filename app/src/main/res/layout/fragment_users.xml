@@ -66,13 +66,14 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:paddingTop="20dp"/>
+
         <ListView
             android:id="@+id/lstUsersWithAccess"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:divider="@android:color/darker_gray"
             android:layout_weight="1"
+            android:divider="@android:color/darker_gray"
             android:dividerHeight="1dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp" />
