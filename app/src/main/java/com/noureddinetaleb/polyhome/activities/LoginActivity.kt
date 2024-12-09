@@ -41,7 +41,7 @@ class LoginActivity : AppCompatActivity() {
         runOnUiThread {
             if (responseCode == 200 && token?.token != null) {
                 saveToken(token.token)
-                val intent = Intent(this, MainActivity::class.java)
+                val intent = Intent(this, DrawerActivity::class.java)
                 val username = findViewById<EditText>(R.id.txtUserName).text.toString()
                 intent.putExtra("TOKEN", token.token)
                 intent.putExtra("USERNAME", username)
@@ -52,9 +52,9 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "Aucun utilisateur ne correspond aux identifiants donnés", Toast.LENGTH_SHORT)
                     .show()
             } else if (responseCode == 500) {
-                Toast.makeText(this, " Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "L: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this, "Erreur lors de la connexion", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "L: Erreur lors de la connexion", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -93,7 +93,7 @@ class LoginActivity : AppCompatActivity() {
      * Redirect to main activity if token and username are found
      * @see TokenStorage class handling token storage
      * @see UsernameStorage class handling username storage
-     * @see MainActivity class handling main activity
+     * @see DrawerActivity class handling main activity
      */
     private fun loadTokenAndUsername() {
         val tokenStorage = TokenStorage(this)
@@ -104,7 +104,7 @@ class LoginActivity : AppCompatActivity() {
             val savedUsername = usernameStorage.read()
 
             if (savedToken.isNotEmpty() && savedUsername.isNotEmpty()) {
-                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                val intent = Intent(this@LoginActivity, DrawerActivity::class.java)
                 intent.putExtra("TOKEN", savedToken)
                 intent.putExtra("USERNAME", savedUsername)
 

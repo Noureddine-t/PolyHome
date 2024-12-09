@@ -12,18 +12,22 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.noureddinetaleb.polyhome.R
-import com.noureddinetaleb.polyhome.fragments.HomeFragment
-import com.noureddinetaleb.polyhome.fragments.HousesFragment
+import com.noureddinetaleb.polyhome.data.HomesData
+import com.noureddinetaleb.polyhome.fragments.MainFragment
+import com.noureddinetaleb.polyhome.fragments.HomesFragment
 import com.noureddinetaleb.polyhome.fragments.UsersFragment
 import com.noureddinetaleb.polyhome.storage.TokenStorage
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class DrawerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var drawerLayout: DrawerLayout
     private val mainScope = MainScope()
 
+    // Data to share between fragments
+    private var houseId: Int = -1
+    private var homes = ArrayList<HomesData>()
 
     /**
      * Create the activity for drawer layout
@@ -31,7 +35,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_drawer)
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -47,18 +51,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction().replace(R.id.fragment_container, HomeFragment()).commit()
+            supportFragmentManager.beginTransaction().replace(R.id.fragment_container, MainFragment()).commit()
             navigationView.setCheckedItem(R.id.nav_home)
         }
 
         val username = intent.getStringExtra("USERNAME") ?: ""
-        val navView: NavigationView = findViewById(R.id.nav_view)
-        val headerView = navView.getHeaderView(0)
+        val headerView = navigationView.getHeaderView(0)
         val txtUserName: TextView = headerView.findViewById(R.id.txtUserName)
         txtUserName.text = username
     }
-
-    private var houseId: Int = -1
 
     /**
      * Set houseId
@@ -77,21 +78,37 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     /**
+     * Set homes list
+     * @param data the homes list
+     */
+    fun setHomesList(data: ArrayList<HomesData>) {
+        homes = data
+    }
+
+    /**
+     * Get homes list
+     * @return homes list
+     */
+    fun getHomesList(): ArrayList<HomesData> {
+        return homes
+    }
+
+    /**
      * Handle navigation item selection
      * @param item selected item
      * @return true if the item is selected
      *        false otherwise
      */
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val homeFragment =
-            supportFragmentManager.findFragmentByTag(HomeFragment::class.java.simpleName) as? HomeFragment
+        val mainFragment =
+            supportFragmentManager.findFragmentByTag(MainFragment::class.java.simpleName) as? MainFragment
 
         val fragment = when (item.itemId) {
-            R.id.nav_home -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, HomeFragment())
+            R.id.nav_home -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, MainFragment())
                 .commit()
 
             R.id.nav_houses -> supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, HousesFragment()).commit()
+                .replace(R.id.fragment_container, HomesFragment()).commit()
 
             R.id.nav_users -> supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, UsersFragment()).commit()
@@ -134,7 +151,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val tokenStorage = TokenStorage(this)
         mainScope.launch {
             tokenStorage.write("")
-            val intent = Intent(this@MainActivity, LoginActivity::class.java)
+            val intent = Intent(this@DrawerActivity, LoginActivity::class.java)
             startActivity(intent)
             finish()
         }

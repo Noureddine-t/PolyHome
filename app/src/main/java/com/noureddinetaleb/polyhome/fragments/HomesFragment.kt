@@ -11,6 +11,7 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.noureddinetaleb.polyhome.R
+import com.noureddinetaleb.polyhome.activities.DrawerActivity
 import com.noureddinetaleb.polyhome.adapter.DevicesAdapter
 import com.noureddinetaleb.polyhome.api.Api
 import com.noureddinetaleb.polyhome.data.DevicesData
@@ -22,49 +23,15 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class HousesFragment : Fragment() {
+class HomesFragment : Fragment() {
 
-    private val homes = ArrayList<HomesData>()
+    private var homes = ArrayList<HomesData>()
     private lateinit var token: String
     private val mainScope = MainScope()
     private lateinit var homesAdapter: ArrayAdapter<HomesData>
 
     private val devices = ArrayList<DevicesData>()
     private lateinit var devicesAdapter: DevicesAdapter
-
-    /**
-     * Load homes in order to get homeId
-     */
-    private fun loadHomes() {
-        Api().get<List<HomesData>>("https://polyhome.lesmoulinsdudev.com/api/houses", ::loadHomesSuccess, token)
-    }
-
-    /**
-     * Handle homes loading success then
-     * Load devices once homes are uploaded
-     */
-    private fun loadHomesSuccess(responseCode: Int, loadedHomes: List<HomesData>?) {
-        mainScope.launch {
-            withContext(Dispatchers.Main) {
-                if (responseCode == 200 && loadedHomes != null) {
-                    homes.clear()
-                    homes.addAll(loadedHomes)
-                    updateHomesList()
-                    Toast.makeText(requireContext(), "Requête acceptée", Toast.LENGTH_SHORT).show()
-                } else if (responseCode == 400) {
-                    Toast.makeText(requireContext(), "Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
-                } else if (responseCode == 403) {
-                    Toast.makeText(requireContext(), "Accès interdit (token invalide)", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Une erreur s’est produite au niveau du serveur",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        }
-    }
 
     /**
      * Update homes list
@@ -90,10 +57,7 @@ class HousesFragment : Fragment() {
      */
     private fun loadDevices(houseId: Int) {
         Api().get<DevicesListData>(
-            "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices",
-            ::loadDevicesSuccess,
-            token
-        )
+            "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices", ::loadDevicesSuccess, token)
     }
 
     /**
@@ -107,23 +71,15 @@ class HousesFragment : Fragment() {
                     devices.addAll(loadedDevices.devices)
                     devicesAdapter.notifyDataSetChanged()
 
-                    Toast.makeText(requireContext(), "Requête acceptée", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Liste des périphériques reçus avec succès", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 400) {
-                    Toast.makeText(requireContext(), "Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "D: Les données fournies sont incorrectes pour charger les périphériques", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 403) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison ou à un tiers ayant accès)",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "D: Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison ou à un tiers ayant accès)", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 500) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Une erreur s’est produite au niveau du serveur (ou maison indisponible)",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "D: Une erreur s’est produite au niveau du serveur (ou maison indisponible)", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(requireContext(), "Une erreur s’est produite", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "D: Une erreur s’est produite", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -135,6 +91,20 @@ class HousesFragment : Fragment() {
     private fun initializeDevicesList() {
         val ordersListView = view?.findViewById<ListView>(R.id.lstDevices)
         ordersListView?.adapter = devicesAdapter
+    }
+
+    //TODO : Send commands to devices
+    //TODO : Add additional functionalities: close all , open all , turn off all , turn on all...
+
+    /**
+     * Handle homes fragment creation and
+     * get homes list from [DrawerActivity] to prevent sending a request to the server
+     * @param savedInstanceState saved instance state
+     */
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val drawerActivity = activity as? DrawerActivity
+        homes = drawerActivity?.getHomesList() ?: ArrayList()
     }
 
     /**
@@ -155,11 +125,11 @@ class HousesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // managing houses display
-        val view = inflater.inflate(R.layout.fragment_houses, container, false)
+        val view = inflater.inflate(R.layout.fragment_homes, container, false)
         homesAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, homes)
         mainScope.launch {
             token = TokenStorage(requireContext()).read()
-            loadHomes()
+            updateHomesList()
             initializeSpinners()
             devicesAdapter = DevicesAdapter(requireContext(), devices)
             initializeDevicesList()

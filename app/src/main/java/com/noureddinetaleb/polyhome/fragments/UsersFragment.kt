@@ -11,7 +11,7 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.noureddinetaleb.polyhome.R
-import com.noureddinetaleb.polyhome.activities.MainActivity
+import com.noureddinetaleb.polyhome.activities.DrawerActivity
 import com.noureddinetaleb.polyhome.adapter.UsersAdapter
 import com.noureddinetaleb.polyhome.api.Api
 import com.noureddinetaleb.polyhome.data.SendUserLogin
@@ -34,7 +34,7 @@ class UsersFragment : Fragment() {
     private val usersWithAccess = ArrayList<UsersWithAccessData>()
     private lateinit var usersWithAccessAdapter: UsersAdapter
 
-    private var houseId = arguments?.getInt("houseId") ?: -1
+    private var houseId : Int = -1
 
     /**
      * Load users in order to get login
@@ -56,19 +56,11 @@ class UsersFragment : Fragment() {
                     users.clear()
                     users.addAll(loadedUsers.map { it.login })
                     updateUsersList()
-                    Toast.makeText(
-                        requireContext(),
-                        "La liste des utilisateurs a bien été retournée",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "La liste de tous les utilisateurs a bien été retournée", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 500) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Une erreur s’est produite au niveau du serveur",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "all U: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(requireContext(), "Erreur est survenue", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "all U: Erreur est survenue", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -98,9 +90,7 @@ class UsersFragment : Fragment() {
      */
     private fun loadUsersWithAccess(houseId: Int) {
         Api().get<List<UsersWithAccessData>>(
-            "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users",
-            ::loadUsersWithAccessSuccess,
-            token
+            "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", ::loadUsersWithAccessSuccess, token
         )
     }
 
@@ -114,19 +104,11 @@ class UsersFragment : Fragment() {
                     usersWithAccess.clear()
                     usersWithAccess.addAll(loadedUsers)
                     usersWithAccessAdapter.notifyDataSetChanged()
-                    Toast.makeText(
-                        requireContext(),
-                        "La liste des utilisateurs ayant accès a bien été retournée",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "La liste des utilisateurs ayant accès a bien été retournée", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 500) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Une erreur s’est produite au niveau du serveur",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "Access U: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(requireContext(), "Erreur est survenue", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Access U: Erreur est survenue", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -172,21 +154,13 @@ class UsersFragment : Fragment() {
                     loadUsersWithAccess(houseId)
                     Toast.makeText(requireContext(), "Accès accordé", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 400) {
-                    Toast.makeText(requireContext(), "Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Up: Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 403) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison)",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "Up: Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison)", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 500) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Une erreur s’est produite au niveau du serveur",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "Up: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(requireContext(), "Erreur est survenue", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Up: Erreur est survenue", Toast.LENGTH_SHORT).show()
                 }
 
             }
@@ -199,16 +173,12 @@ class UsersFragment : Fragment() {
     fun removeUserAccess(selectedUser: String) {
         val user = SendUserLogin(selectedUser)
         if (houseId != -1) {
-            Api().delete<SendUserLogin>(
-                "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users",
-                user,
-                ::removeUserAccessSuccess,
-                token
+            Api().delete<SendUserLogin>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", user, ::removeUserAccessSuccess, token
             )
         } else {
             mainScope.launch {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Aucune maison n'a été trouvée", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "D: Aucune maison n'a été trouvée", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -225,31 +195,36 @@ class UsersFragment : Fragment() {
                     loadUsersWithAccess(houseId)
                     Toast.makeText(requireContext(), "Suppression réalisée", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 400) {
-                    Toast.makeText(requireContext(), "Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "D: Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 403) {
                     Toast.makeText(
                         requireContext(),
-                        "Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison)",
+                        "D: Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison)",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else if (responseCode == 500) {
                     Toast.makeText(
                         requireContext(),
-                        "Une erreur s’est produite au niveau du serveur",
+                        "D: Une erreur s’est produite au niveau du serveur",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
-                    Toast.makeText(requireContext(), "Erreur est survenue", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "D: Erreur est survenue", Toast.LENGTH_SHORT).show()
                 }
 
             }
         }
     }
 
+    /**
+     * Handle  users fragment creation and
+     * Get houseId from [DrawerActivity] to prevent sending requests again
+     * @param savedInstanceState the saved instance state
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val mainActivity = activity as? MainActivity
-        houseId = mainActivity?.getHouseId() ?: -1
+        val drawerActivity = activity as? DrawerActivity
+        houseId = drawerActivity?.getHouseId() ?: -1
     }
 
     override fun onCreateView(

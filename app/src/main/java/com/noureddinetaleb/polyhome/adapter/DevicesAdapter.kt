@@ -16,6 +16,7 @@ class DevicesAdapter(private val context: Context, private val dataSource: Array
     override fun getItem(position: Int): Any = dataSource[position]
     override fun getCount(): Int = dataSource.size
 
+    // TODO: adapte buttons shown to device type
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val rowView = inflater.inflate(R.layout.devices_list_item, parent, false)
         val devices = dataSource[position]

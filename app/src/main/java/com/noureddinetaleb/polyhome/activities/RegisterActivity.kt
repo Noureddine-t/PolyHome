@@ -41,11 +41,11 @@ class RegisterActivity : AppCompatActivity() {
                 startActivity(intent)
                 Toast.makeText(this, "Le compte a bien été créé", Toast.LENGTH_SHORT).show()
             } else if (responseCode == 409) {
-                Toast.makeText(this, " Le login est déjà utilisé par un autre compte", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Le login est déjà utilisé par un autre compte", Toast.LENGTH_SHORT).show()
             } else if (responseCode == 500)
-                Toast.makeText(this, "Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "R: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
             else {
-                Toast.makeText(this, "Erreur lors de l'inscription", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "R: Erreur lors de l'inscription", Toast.LENGTH_SHORT).show()
             }
         }
 

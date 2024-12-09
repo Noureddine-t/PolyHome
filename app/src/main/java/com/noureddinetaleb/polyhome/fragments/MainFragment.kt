@@ -9,7 +9,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import com.noureddinetaleb.polyhome.R
-import com.noureddinetaleb.polyhome.activities.MainActivity
+import com.noureddinetaleb.polyhome.activities.DrawerActivity
 import com.noureddinetaleb.polyhome.api.Api
 import com.noureddinetaleb.polyhome.data.HomesData
 import com.noureddinetaleb.polyhome.data.UsersWithAccessData
@@ -19,7 +19,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class HomeFragment : Fragment() {
+class MainFragment : Fragment() {
 
     private val homes = ArrayList<HomesData>()
     private lateinit var token: String
@@ -49,19 +49,15 @@ class HomeFragment : Fragment() {
                     homes.addAll(loadedHomes)
                     val houseCount = view?.findViewById<TextView>(R.id.house_count)
                     houseCount?.text = homes.size.toString()
-                    Toast.makeText(requireContext(), "Requête acceptée", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Liste de mes maisons reçue avec succès (count)", Toast.LENGTH_SHORT).show()
                     houseId = homes.find { it.owner }?.houseId ?: -1
                     loadUsers(houseId)
                 } else if (responseCode == 400) {
-                    Toast.makeText(requireContext(), "Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "H count: Les données fournies sont incorrectes pour charger mes maisons", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 403) {
-                    Toast.makeText(requireContext(), "Accès interdit (token invalide)", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "H count: Accès interdit (token invalide)", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Une erreur s’est produite au niveau du serveur",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "H count: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -93,32 +89,28 @@ class HomeFragment : Fragment() {
                     usersWithAccess.addAll(loadedUsers)
                     val usersWithAccessCount = view?.findViewById<TextView>(R.id.user_count)
                     usersWithAccessCount?.text = usersWithAccess.size.toString()
-                    Toast.makeText(
-                        requireContext(),
-                        "La liste des utilisateurs ayant accès a bien été retournée",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "La liste des utilisateurs ayant accès a bien été retournée (count)", Toast.LENGTH_SHORT).show()
                     sendDataToActivity()
-                } else if (responseCode == 500) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Une erreur s’est produite au niveau du serveur",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    Toast.makeText(requireContext(), "Erreur est survenue", Toast.LENGTH_SHORT).show()
+                }
+                else if (responseCode == 500) {
+                    Toast.makeText(requireContext(), "U count: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    Toast.makeText(requireContext(), "U count: Erreur est survenue", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
     /**
-     * Send houseId to the activity
+     * Send houseId and
+     * homes list to the activity
      * to be used in other fragments
      */
     private fun sendDataToActivity() {
-        val activity = requireActivity() as? MainActivity
+        val activity = requireActivity() as? DrawerActivity
         activity?.setHouseId(houseId)
+        activity?.setHomesList(homes)
     }
 
     /**
@@ -136,7 +128,7 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
+        val view = inflater.inflate(R.layout.fragment_main, container, false)
 
         mainScope.launch {
             token = TokenStorage(requireContext()).read()
@@ -158,9 +150,9 @@ class HomeFragment : Fragment() {
         val usersButton = view.findViewById<Button>(R.id.manage_users_button)
 
         housesButton?.setOnClickListener {
-            val housesFragment = HousesFragment()
+            val homesFragment = HomesFragment()
             val transaction = requireActivity().supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragment_container, housesFragment)
+            transaction.replace(R.id.fragment_container, homesFragment)
             transaction.addToBackStack(null)
             transaction.commit()
         }
