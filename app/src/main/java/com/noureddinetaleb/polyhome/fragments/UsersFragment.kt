@@ -55,6 +55,7 @@ class UsersFragment : Fragment() {
                 if (responseCode == 200 && loadedUsers != null) {
                     users.clear()
                     users.addAll(loadedUsers.map { it.login })
+                    //TODO: exclude users with access and the owner and notify everytime the list is updated
                     updateUsersList()
                     Toast.makeText(requireContext(), "La liste de tous les utilisateurs a bien été retournée", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 500) {
