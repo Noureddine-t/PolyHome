@@ -23,6 +23,10 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Homes fragment
+ * @constructor Create empty Homes fragment
+ */
 class HomesFragment : Fragment() {
 
     private var homes = ArrayList<HomesData>()

@@ -19,6 +19,11 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Main fragment
+ * shows number of houses and users with access to the house (owner included)
+ * @constructor Create empty Main fragment
+ */
 class MainFragment : Fragment() {
 
     private val homes = ArrayList<HomesData>()

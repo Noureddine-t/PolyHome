@@ -20,6 +20,16 @@ import com.noureddinetaleb.polyhome.storage.TokenStorage
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
+/**
+ * Drawer activity
+ * @constructor Create empty Drawer activity
+ * @see NavigationView.OnNavigationItemSelectedListener
+ * @see AppCompatActivity
+ * @property drawerLayout the drawer layout for the activity
+ * @property mainScope the main scope for coroutines
+ * @property houseId the houseId to share between fragments
+ * @property homes the homes list to share between fragments
+ */
 class DrawerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var drawerLayout: DrawerLayout

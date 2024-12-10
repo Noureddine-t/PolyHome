@@ -26,6 +26,7 @@ import kotlinx.coroutines.withContext
 
 /**
  * Fragment for users
+ * @constructor Create empty Users fragment
  */
 class UsersFragment : Fragment() {
 
