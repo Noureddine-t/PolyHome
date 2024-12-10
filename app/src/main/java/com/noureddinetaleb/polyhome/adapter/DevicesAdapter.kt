@@ -1,6 +1,7 @@
 package com.noureddinetaleb.polyhome.adapter
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,30 +37,83 @@ class DevicesAdapter(private val context: Context, private val dataSource: Array
         val btnOn = rowView.findViewById<Button>(R.id.onButton)
         val btnOff = rowView.findViewById<Button>(R.id.offButton)
 
+        updateButtonsState(devices, btnOn, btnOff, btnOpen, btnClose, btnStop)
 
-        /**
-         * Set the buttons text and visibility according to the device type
-         */
-        when (devices.type.lowercase()) {
+        return rowView
+    }
+
+    /**
+     * Update the buttons state
+     * Show the buttons according to the device type
+     * Enable or disable the buttons according to the device state
+     * @param devices: list of the devices at the house
+     * @param btnOn: the button to turn on the light
+     * @param btnOff: the button to turn off the light
+     * @param btnOpen: the button to open the shutter or the garage door
+     * @param btnClose: the button to close the shutter or the garage door
+     * @param btnStop: the button to stop the shutter or the garage door
+     */
+    private fun updateButtonsState(devices: DevicesData, btnOn: Button, btnOff: Button, btnOpen: Button, btnClose: Button, btnStop: Button) {
+        when (devices.type) {
             "light" -> {
                 btnOn.text = "On"
                 btnOff.text = "Off"
                 btnOpen.visibility = View.GONE
                 btnClose.visibility = View.GONE
                 btnStop.visibility = View.GONE
+
+                if (devices.power == 0) {
+                    btnOff.isEnabled = false
+                    btnOff.setBackgroundColor(Color.WHITE)
+                    btnOn.isEnabled = true
+
+                } else {
+                    btnOn.isEnabled = false
+                    btnOn.setBackgroundColor(Color.WHITE)
+                    btnOff.isEnabled = true
+                }
             }
+
             "sliding shutter", "garage door", "rolling shutter" -> {
                 btnOpen.text = "Open"
                 btnClose.text = "Close"
                 btnStop.text = "Stop"
                 btnOn.visibility = View.GONE
                 btnOff.visibility = View.GONE
+
+                when (devices.opening) {
+                    0 -> {
+                        btnClose.isEnabled = false
+                        btnClose.setBackgroundColor(Color.WHITE)
+                    }
+                    1 -> {
+                        btnOpen.isEnabled = false
+                        btnOpen.setBackgroundColor(Color.WHITE)
+                    }
+                    in 1..99 -> {
+                        btnStop.isEnabled = false
+                        btnStop.setBackgroundColor(Color.WHITE)
+                    }
+                }
+
+                when (devices.openingMode) {
+                    0 -> {
+                        btnOpen.isEnabled = false
+                        btnOpen.setBackgroundColor(Color.WHITE)
+                    }
+                    1 -> {
+                        btnClose.isEnabled = false
+                        btnClose.setBackgroundColor(Color.WHITE)
+                    }
+                    2 -> {
+                        btnStop.isEnabled = false
+                        btnStop.setBackgroundColor(Color.WHITE)
+                    }
+                }
             }
         }
-
-
-        return rowView
     }
+
     private fun manageLight(deviceId: String, action: String) {
 
     }
