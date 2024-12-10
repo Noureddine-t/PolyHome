@@ -1,5 +1,6 @@
 package com.noureddinetaleb.polyhome.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,8 +24,10 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Fragment for users
+ */
 class UsersFragment : Fragment() {
-
 
     private val users = ArrayList<String>()
     private val mainScope = MainScope()
@@ -54,10 +57,11 @@ class UsersFragment : Fragment() {
             withContext(Dispatchers.Main) {
                 if (responseCode == 200 && loadedUsers != null) {
                     users.clear()
-                    users.addAll(loadedUsers.map { it.login })
-                    //TODO: exclude users with access and the owner and notify everytime the list is updated
+                    // Exclure les utilisateurs ayant déjà accès
+                    val usersWithAccessLogins = usersWithAccess.map { it.userLogin }
+                    users.addAll(loadedUsers.map { it.login }.filter { it !in usersWithAccessLogins })
                     updateUsersList()
-                    Toast.makeText(requireContext(), "La liste de tous les utilisateurs a bien été retournée", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "La liste de tous les utilisateurs n'ayant pas accès a bien été retournée", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 500) {
                     Toast.makeText(requireContext(), "all U: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
                 } else {
@@ -153,6 +157,7 @@ class UsersFragment : Fragment() {
             withContext(Dispatchers.Main) {
                 if (responseCode == 200) {
                     loadUsersWithAccess(houseId)
+                    loadUsers() // Recharger la liste des utilisateurs
                     Toast.makeText(requireContext(), "Accès accordé", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 400) {
                     Toast.makeText(requireContext(), "Up: Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
@@ -163,7 +168,6 @@ class UsersFragment : Fragment() {
                 } else {
                     Toast.makeText(requireContext(), "Up: Erreur est survenue", Toast.LENGTH_SHORT).show()
                 }
-
             }
         }
     }
@@ -194,6 +198,7 @@ class UsersFragment : Fragment() {
             withContext(Dispatchers.Main) {
                 if (responseCode == 200) {
                     loadUsersWithAccess(houseId)
+                    loadUsers() // Recharger la liste des utilisateurs
                     Toast.makeText(requireContext(), "Suppression réalisée", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 400) {
                     Toast.makeText(requireContext(), "D: Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
@@ -212,7 +217,6 @@ class UsersFragment : Fragment() {
                 } else {
                     Toast.makeText(requireContext(), "D: Erreur est survenue", Toast.LENGTH_SHORT).show()
                 }
-
             }
         }
     }
@@ -244,9 +248,22 @@ class UsersFragment : Fragment() {
             usersWithAccessAdapter = UsersAdapter(requireContext(), usersWithAccess)
             usersWithAccessAdapter.setUserActionListener(object : UsersAdapter.OnUserActionListener {
                 override fun onRemoveUser(userLogin: String) {
-                    removeUserAccess(userLogin)
+                    val alertDialog = AlertDialog.Builder(context)
+                        .setTitle("Confirmation de suppression")
+                        .setMessage("Êtes-vous sûr de vouloir supprimer l'utilisateur $userLogin ? Cette action est irréversible.")
+                        .setPositiveButton("Confirmer") { dialog, _ ->
+                            removeUserAccess(userLogin)
+                            dialog.dismiss()
+                        }
+                        .setNegativeButton("Annuler") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .create()
+
+                    alertDialog.show()
                 }
             })
+
             initializeUsersWithAccessList()
         }
         val btnAdd = view.findViewById<Button>(R.id.btnAddUser)

@@ -89,13 +89,12 @@ class HomesFragment : Fragment() {
      * Initialize devices list
      */
     private fun initializeDevicesList() {
-        val ordersListView = view?.findViewById<ListView>(R.id.lstDevices)
-        ordersListView?.adapter = devicesAdapter
+        val devicesListView = view?.findViewById<ListView>(R.id.lstDevices)
+        devicesListView?.adapter = devicesAdapter
     }
 
     //TODO : Send commands to devices
-    //TODO : Add additional functionalities: close all , open all , turn off all , turn on all...
-
+    //TODO : Add additional functionalities: close all, open all, turn off all, turn on all...
     /**
      * Handle homes fragment creation and
      * get homes list from [DrawerActivity] to prevent sending a request to the server

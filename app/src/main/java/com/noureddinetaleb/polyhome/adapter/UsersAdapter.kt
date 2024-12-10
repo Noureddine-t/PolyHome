@@ -10,8 +10,13 @@ import android.widget.TextView
 import com.noureddinetaleb.polyhome.R
 import com.noureddinetaleb.polyhome.data.UsersWithAccessData
 
-class UsersAdapter(private val context: Context, private val dataSource: ArrayList<UsersWithAccessData>) :
-    BaseAdapter() {
+/**
+ * Adapter for the users list
+ * @param context: the context of the activity
+ * @param dataSource: the list of users with access
+ * @return the view of the users list
+ */
+class UsersAdapter(private val context: Context, private val dataSource: ArrayList<UsersWithAccessData>) : BaseAdapter() {
     private val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
     override fun getItemId(position: Int): Long = position.toLong()
@@ -20,14 +25,27 @@ class UsersAdapter(private val context: Context, private val dataSource: ArrayLi
 
     private var userActionListener: OnUserActionListener? = null
 
+    /**
+     * Interface for user actions listener to remove user from the list
+     */
     interface OnUserActionListener {
         fun onRemoveUser(userLogin: String)
     }
 
+    /**
+     * Set the user action listener to remove user from the list
+     */
     fun setUserActionListener(listener: OnUserActionListener) {
         this.userActionListener = listener
     }
 
+    /**
+     * Update the users list
+     * @param position: the position of the user to remove
+     * @param convertView: the view of the user to remove
+     * @param parent: the parent view of the user to remove
+     * @return the view of the users list
+     */
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val rowView = inflater.inflate(R.layout.users_list_item, parent, false)
         val users = dataSource[position]
@@ -37,10 +55,9 @@ class UsersAdapter(private val context: Context, private val dataSource: ArrayLi
 
         if (users.owner == 1) {
             userView.text = users.userLogin + " (Propriétaire)"
-            btnRemove.isEnabled = false
+            btnRemove.visibility = View.GONE
         } else {
             userView.text = users.userLogin
-            btnRemove.isEnabled = true
         }
 
         btnRemove.setOnClickListener {

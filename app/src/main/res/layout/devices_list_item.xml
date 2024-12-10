@@ -8,37 +8,72 @@
 
     <TextView
         android:id="@+id/deviceName"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
-        android:text="Device Name"
-        android:textSize="16sp"
-        android:textColor="@android:color/black"
         android:ellipsize="end"
         android:maxLines="1"
-        android:paddingEnd="10dp" />
+        android:paddingEnd="10dp"
+        android:text="Device Name"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/openButton"
-        android:layout_width="65dp"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="O"
-        android:minWidth="80dp" />
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="end">
 
-    <Button
-        android:id="@+id/closeButton"
-        android:layout_width="65dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:minWidth="80dp"
-        android:text="F" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end">
 
-    <Button
-        android:id="@+id/stopButton"
-        android:layout_width="65dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:minWidth="80dp"
-        android:text="A" />
+            <Button
+                android:id="@+id/onButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:minWidth="80dp"
+                android:text="On"
+                android:backgroundTint="#2E8A2E" />
+
+            <Button
+                android:id="@+id/offButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:minWidth="80dp"
+                android:text="Off"
+                android:backgroundTint="#CA1C16" />
+
+            <Button
+                android:id="@+id/openButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="80dp"
+                android:text="O"
+                android:backgroundTint="#2792DE" />
+
+            <Button
+                android:id="@+id/closeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:minWidth="80dp"
+                android:text="F"
+                android:backgroundTint="#1C1F21" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/stopButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:minWidth="80dp"
+            android:text="A"
+            android:backgroundTint="#FF9800" />
+    </LinearLayout>
 
 </LinearLayout>

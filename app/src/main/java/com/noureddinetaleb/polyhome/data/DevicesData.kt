@@ -12,13 +12,9 @@ package com.noureddinetaleb.polyhome.data
  */
 data class DevicesData(
     val id: String,
-    val type: DeviceType,
+    val type: String,
     val availableCommands: List<String>,
     val power: Int? = null,
     val opening: Int? = null,
     val openingMode: Int? = null,
-) {
-    override fun toString(): String {
-        return "Device $id, Type $type"
-    }
-}
+)
