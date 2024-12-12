@@ -24,6 +24,22 @@ class DevicesAdapter(private val context: Context, private val dataSource: Array
     override fun getItem(position: Int): Any = dataSource[position]
     override fun getCount(): Int = dataSource.size
 
+    private var deviceCommandListener: OnDeviceListener? = null
+
+    /**
+     * Interface for user actions listener to remove user from the list
+     */
+    interface OnDeviceListener {
+        fun onSendCommand(deviceId: String, command: String)
+    }
+
+    /**
+     * Set the user action listener to remove user from the list
+     */
+    fun setDeviceCommandListener(listener: OnDeviceListener) {
+        this.deviceCommandListener = listener
+    }
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val rowView = inflater.inflate(R.layout.devices_list_item, parent, false)
         val devices = dataSource[position]
@@ -39,12 +55,27 @@ class DevicesAdapter(private val context: Context, private val dataSource: Array
 
         updateButtonsState(devices, btnOn, btnOff, btnOpen, btnClose, btnStop)
 
+        btnOn.setOnClickListener {
+            deviceCommandListener?.onSendCommand(devices.id, "TURN ON")
+        }
+        btnOff.setOnClickListener {
+            deviceCommandListener?.onSendCommand(devices.id, "TURN OFF")
+        }
+        btnOpen.setOnClickListener {
+            deviceCommandListener?.onSendCommand(devices.id, "OPEN")
+        }
+        btnClose.setOnClickListener {
+            deviceCommandListener?.onSendCommand(devices.id, "CLOSE")
+        }
+        btnStop.setOnClickListener {
+            deviceCommandListener?.onSendCommand(devices.id, "STOP")
+        }
         return rowView
     }
 
     /**
      * Update the buttons state
-     * Show the buttons according to the device type
+     * Show the buttons according to the device type (on/off for light or open/close/stop for shutter and garage door)
      * Enable or disable the buttons according to the device state
      * @param devices: list of the devices at the house
      * @param btnOn: the button to turn on the light
@@ -62,16 +93,16 @@ class DevicesAdapter(private val context: Context, private val dataSource: Array
                 btnClose.visibility = View.GONE
                 btnStop.visibility = View.GONE
 
-                if (devices.power == 0) {
-                    btnOff.isEnabled = false
-                    btnOff.setBackgroundColor(Color.WHITE)
-                    btnOn.isEnabled = true
-
-                } else {
-                    btnOn.isEnabled = false
-                    btnOn.setBackgroundColor(Color.WHITE)
-                    btnOff.isEnabled = true
-                }
+//                if (devices.power == 0) {
+//                    btnOff.isEnabled = false
+//                    btnOff.setBackgroundColor(Color.WHITE)
+//                    btnOn.isEnabled = true
+//
+//                } else {
+//                    btnOn.isEnabled = false
+//                    btnOn.setBackgroundColor(Color.WHITE)
+//                    btnOff.isEnabled = true
+//                }
             }
 
             "sliding shutter", "garage door", "rolling shutter" -> {
@@ -80,46 +111,37 @@ class DevicesAdapter(private val context: Context, private val dataSource: Array
                 btnStop.text = "Stop"
                 btnOn.visibility = View.GONE
                 btnOff.visibility = View.GONE
-
-                when (devices.opening) {
-                    0 -> {
-                        btnClose.isEnabled = false
-                        btnClose.setBackgroundColor(Color.WHITE)
-                    }
-                    1 -> {
-                        btnOpen.isEnabled = false
-                        btnOpen.setBackgroundColor(Color.WHITE)
-                    }
-                    in 1..99 -> {
-                        btnStop.isEnabled = false
-                        btnStop.setBackgroundColor(Color.WHITE)
-                    }
-                }
-
-                when (devices.openingMode) {
-                    0 -> {
-                        btnOpen.isEnabled = false
-                        btnOpen.setBackgroundColor(Color.WHITE)
-                    }
-                    1 -> {
-                        btnClose.isEnabled = false
-                        btnClose.setBackgroundColor(Color.WHITE)
-                    }
-                    2 -> {
-                        btnStop.isEnabled = false
-                        btnStop.setBackgroundColor(Color.WHITE)
-                    }
-                }
+//
+//                when (devices.opening) {
+//                    0 -> {
+//                        btnClose.isEnabled = false
+//                        btnClose.setBackgroundColor(Color.WHITE)
+//                    }
+//                    1 -> {
+//                        btnOpen.isEnabled = false
+//                        btnOpen.setBackgroundColor(Color.WHITE)
+//                    }
+//                    in 1..99 -> {
+//                        btnStop.isEnabled = false
+//                        btnStop.setBackgroundColor(Color.WHITE)
+//                    }
+//                }
+//
+//                when (devices.openingMode) {
+//                    0 -> {
+//                        btnOpen.isEnabled = false
+//                        btnOpen.setBackgroundColor(Color.WHITE)
+//                    }
+//                    1 -> {
+//                        btnClose.isEnabled = false
+//                        btnClose.setBackgroundColor(Color.WHITE)
+//                    }
+//                    2 -> {
+//                        btnStop.isEnabled = false
+//                        btnStop.setBackgroundColor(Color.WHITE)
+//                    }
+//                }
             }
         }
     }
-
-    private fun manageLight(deviceId: String, action: String) {
-
-    }
-
-    private fun manageShutterAndGarage(deviceId: String, action: String) {
-
-    }
-
 }

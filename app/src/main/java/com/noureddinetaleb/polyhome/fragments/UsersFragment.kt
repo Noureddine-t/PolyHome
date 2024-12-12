@@ -252,26 +252,23 @@ class UsersFragment : Fragment() {
                     val alertDialog = AlertDialog.Builder(context)
                         .setTitle("Confirmation de suppression")
                         .setMessage("Êtes-vous sûr de vouloir supprimer l'utilisateur $userLogin ? Cette action est irréversible.")
-                        .setPositiveButton("Confirmer") { dialog, _ ->
-                            removeUserAccess(userLogin)
+                        .setPositiveButton("Confirmer") { dialog, _ -> removeUserAccess(userLogin)
                             dialog.dismiss()
                         }
-                        .setNegativeButton("Annuler") { dialog, _ ->
-                            dialog.dismiss()
-                        }
+                        .setNegativeButton("Annuler") { dialog, _ -> dialog.dismiss() }
                         .create()
 
                     alertDialog.show()
                 }
             })
-
             initializeUsersWithAccessList()
         }
+
         val btnAdd = view.findViewById<Button>(R.id.btnAddUser)
+        val spinUsers = view.findViewById<Spinner>(R.id.spinUsers)
         btnAdd.setOnClickListener {
-            val spinUsers = view.findViewById<Spinner>(R.id.spinUsers)
-            val selectedUser = spinUsers?.selectedItem as? String
-            updateAccess(selectedUser ?: "")
+            val selectedUser = spinUsers.selectedItem as String
+            updateAccess(selectedUser)
         }
 
         return view

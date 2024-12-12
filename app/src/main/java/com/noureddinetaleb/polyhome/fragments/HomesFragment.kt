@@ -17,6 +17,7 @@ import com.noureddinetaleb.polyhome.api.Api
 import com.noureddinetaleb.polyhome.data.DevicesData
 import com.noureddinetaleb.polyhome.data.DevicesListData
 import com.noureddinetaleb.polyhome.data.HomesData
+import com.noureddinetaleb.polyhome.data.SendCommand
 import com.noureddinetaleb.polyhome.storage.TokenStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -36,6 +37,7 @@ class HomesFragment : Fragment() {
 
     private val devices = ArrayList<DevicesData>()
     private lateinit var devicesAdapter: DevicesAdapter
+    private var houseId = -1
 
     /**
      * Update homes list
@@ -97,8 +99,36 @@ class HomesFragment : Fragment() {
         devicesListView?.adapter = devicesAdapter
     }
 
-    //TODO : Send commands to devices
     //TODO : Add additional functionalities: close all, open all, turn off all, turn on all...
+
+    /**
+     * Send command to device
+     */
+    private fun sendCommand(houseId: Int, deviceId: String, commandToSend: String) {
+        val command = SendCommand(commandToSend)
+        Api().post<SendCommand>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices/$deviceId/command", command, ::sendCommandSuccess, token)
+    }
+
+    /**
+     * Handle command sending success
+     */
+    private fun sendCommandSuccess(responseCode: Int) {
+        MainScope().launch {
+            withContext(Dispatchers.Main) {
+                if (responseCode == 200) {
+                    Toast.makeText(requireContext(), "Commande envoyé avec succèss", Toast.LENGTH_SHORT).show()
+                } else if (responseCode == 400) {
+                    Toast.makeText(requireContext(), "C: Les données fournies sont incorrectes pour charger les périphériques", Toast.LENGTH_SHORT).show()
+                } else if (responseCode == 500) {
+                    Toast.makeText(requireContext(), "C: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "C: Une erreur s’est produite", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+
     /**
      * Handle homes fragment creation and
      * get homes list from [DrawerActivity] to prevent sending a request to the server
@@ -118,7 +148,6 @@ class HomesFragment : Fragment() {
      * @return view
      *       fragment view
      *       null if an exception is caught
-     * @see loadHomes
      * @see initializeSpinners
      * @see initializeDevicesList
      * @see loadDevices
@@ -135,16 +164,22 @@ class HomesFragment : Fragment() {
             updateHomesList()
             initializeSpinners()
             devicesAdapter = DevicesAdapter(requireContext(), devices)
+            devicesAdapter.setDeviceCommandListener(object : DevicesAdapter.OnDeviceListener {
+                override fun onSendCommand(deviceId: String, command: String) {
+                    sendCommand(houseId, deviceId, command)
+                    loadDevices(houseId)
+                }
+            })
             initializeDevicesList()
         }
 
         //managing devices display based on selected house
         val btnValidate = view.findViewById<Button>(R.id.btnValidate)
+        val spinHomes = view.findViewById<Spinner>(R.id.spinHomes)
         btnValidate.setOnClickListener {
-            val spinHomes = view.findViewById<Spinner>(R.id.spinHomes)
-            val selectedHome = spinHomes?.selectedItem as? HomesData
-            val houseId = selectedHome?.houseId
-            loadDevices(houseId ?: -1)
+            val selectedHome = spinHomes.selectedItem as HomesData
+            houseId = selectedHome.houseId
+            loadDevices(houseId)
         }
         return view
     }
