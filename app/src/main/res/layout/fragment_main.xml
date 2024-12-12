@@ -49,9 +49,9 @@
                 android:id="@+id/house_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="houses i can access"
-                android:textSize="16sp"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="8dp"
+                android:text="counting houses failed"
+                android:textSize="16sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -85,12 +85,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="users with access"
+                android:text="counting users with access failed"
                 android:textSize="16sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
-    <!-- Bouton vers d'autres fonctionnalités -->
 
     <Button
         android:id="@+id/manage_houses_button"

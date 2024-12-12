@@ -23,21 +23,20 @@
 
         <Spinner
             android:id="@+id/spinHomes"
-            android:layout_width="300dp"
+            android:layout_width="304dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="20dp"
             android:background="@color/white"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:spinnerMode="dropdown"
-            android:popupBackground="#B1A2C8"
             android:dropDownWidth="match_parent"
             android:dropDownVerticalOffset="40dp"
-            />
+            android:paddingLeft="5dp"
+            android:paddingTop="10dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="10dp"
+            android:popupBackground="#B1A2C8"
+            android:spinnerMode="dropdown" />
 
         <Button
             android:id="@+id/btnValidate"
@@ -57,13 +56,14 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:paddingTop="20dp"/>
+
         <ListView
             android:id="@+id/lstDevices"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="357dp"
             android:layout_marginTop="20dp"
-            android:divider="@android:color/darker_gray"
             android:layout_weight="1"
+            android:divider="@android:color/darker_gray"
             android:dividerHeight="1dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp" />
