@@ -16,28 +16,12 @@ import com.noureddinetaleb.polyhome.data.UsersWithAccessData
  * @param dataSource: the list of users with access
  * @return the view of the users list
  */
-class UsersAdapter(private val context: Context, private val dataSource: ArrayList<UsersWithAccessData>) : BaseAdapter() {
+class UsersAdapter(private val context: Context, private val dataSource: ArrayList<UsersWithAccessData>,private val onRemoveUser:(userLogin:String)->Unit ) : BaseAdapter() {
     private val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
     override fun getItemId(position: Int): Long = position.toLong()
     override fun getItem(position: Int): Any = dataSource[position]
     override fun getCount(): Int = dataSource.size
-
-    private var userActionListener: OnUserActionListener? = null
-
-    /**
-     * Interface for user actions listener to remove user from the list
-     */
-    interface OnUserActionListener {
-        fun onRemoveUser(userLogin: String)
-    }
-
-    /**
-     * Set the user action listener to remove user from the list
-     */
-    fun setUserActionListener(listener: OnUserActionListener) {
-        this.userActionListener = listener
-    }
 
     /**
      * Update the users list
@@ -61,7 +45,7 @@ class UsersAdapter(private val context: Context, private val dataSource: ArrayLi
         }
 
         btnRemove.setOnClickListener {
-            userActionListener?.onRemoveUser(users.userLogin)
+            onRemoveUser(users.userLogin)
         }
         return rowView
     }

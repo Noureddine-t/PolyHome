@@ -115,14 +115,19 @@ class HomesFragment : Fragment() {
     private fun sendCommandSuccess(responseCode: Int) {
         MainScope().launch {
             withContext(Dispatchers.Main) {
-                if (responseCode == 200) {
-                    Toast.makeText(requireContext(), "Commande envoyé avec succèss", Toast.LENGTH_SHORT).show()
-                } else if (responseCode == 400) {
-                    Toast.makeText(requireContext(), "C: Les données fournies sont incorrectes pour charger les périphériques", Toast.LENGTH_SHORT).show()
-                } else if (responseCode == 500) {
-                    Toast.makeText(requireContext(), "C: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(requireContext(), "C: Une erreur s’est produite", Toast.LENGTH_SHORT).show()
+                when (responseCode) {
+                    200 -> {
+                        Toast.makeText(requireContext(), "Commande envoyé avec succèss", Toast.LENGTH_SHORT).show()
+                    }
+                    400 -> {
+                        Toast.makeText(requireContext(), "C: Les données fournies sont incorrectes pour charger les périphériques", Toast.LENGTH_SHORT).show()
+                    }
+                    500 -> {
+                        Toast.makeText(requireContext(), "C: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        Toast.makeText(requireContext(), "C: Une erreur s’est produite", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -155,32 +160,35 @@ class HomesFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // managing houses display
+        ): View? {
+
+        // loading homes list and initializing spinners
         val view = inflater.inflate(R.layout.fragment_homes, container, false)
         homesAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, homes)
         mainScope.launch {
             token = TokenStorage(requireContext()).read()
             updateHomesList()
             initializeSpinners()
-            devicesAdapter = DevicesAdapter(requireContext(), devices)
-            devicesAdapter.setDeviceCommandListener(object : DevicesAdapter.OnDeviceListener {
-                override fun onSendCommand(deviceId: String, command: String) {
-                    sendCommand(houseId, deviceId, command)
-                    loadDevices(houseId)
-                }
-            })
-            initializeDevicesList()
         }
 
-        //managing devices display based on selected house
+        //loading devices based on selected house
         val btnValidate = view.findViewById<Button>(R.id.btnValidate)
         val spinHomes = view.findViewById<Spinner>(R.id.spinHomes)
         btnValidate.setOnClickListener {
             val selectedHome = spinHomes.selectedItem as HomesData
             houseId = selectedHome.houseId
             loadDevices(houseId)
+            mainScope.launch {
+                initializeDevicesList()
+            }
         }
+
+        // managing devices commands
+        devicesAdapter = DevicesAdapter(requireContext(), devices) { deviceId, command ->
+            sendCommand(houseId, deviceId, command)
+        }
+
+
         return view
     }
 

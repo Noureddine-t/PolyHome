@@ -17,28 +17,13 @@ import com.noureddinetaleb.polyhome.data.DevicesData
  * @param dataSource: the list of devices
  * @return the view of the devices list
  */
-class DevicesAdapter(private val context: Context, private val dataSource: ArrayList<DevicesData>) : BaseAdapter() {
+class DevicesAdapter(private val context: Context, private val dataSource: ArrayList<DevicesData>,private val onCommand: (deviceId: String, command: String) -> Unit) : BaseAdapter() {
     private val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
     override fun getItemId(position: Int): Long = position.toLong()
     override fun getItem(position: Int): Any = dataSource[position]
     override fun getCount(): Int = dataSource.size
 
-    private var deviceCommandListener: OnDeviceListener? = null
-
-    /**
-     * Interface for user actions listener to remove user from the list
-     */
-    interface OnDeviceListener {
-        fun onSendCommand(deviceId: String, command: String)
-    }
-
-    /**
-     * Set the user action listener to remove user from the list
-     */
-    fun setDeviceCommandListener(listener: OnDeviceListener) {
-        this.deviceCommandListener = listener
-    }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val rowView = inflater.inflate(R.layout.devices_list_item, parent, false)
@@ -55,21 +40,11 @@ class DevicesAdapter(private val context: Context, private val dataSource: Array
 
         updateButtonsState(devices, btnOn, btnOff, btnOpen, btnClose, btnStop)
 
-        btnOn.setOnClickListener {
-            deviceCommandListener?.onSendCommand(devices.id, "TURN ON")
-        }
-        btnOff.setOnClickListener {
-            deviceCommandListener?.onSendCommand(devices.id, "TURN OFF")
-        }
-        btnOpen.setOnClickListener {
-            deviceCommandListener?.onSendCommand(devices.id, "OPEN")
-        }
-        btnClose.setOnClickListener {
-            deviceCommandListener?.onSendCommand(devices.id, "CLOSE")
-        }
-        btnStop.setOnClickListener {
-            deviceCommandListener?.onSendCommand(devices.id, "STOP")
-        }
+        btnOn.setOnClickListener { onCommand(devices.id, "TURN ON") }
+        btnOff.setOnClickListener { onCommand(devices.id, "TURN OFF") }
+        btnOpen.setOnClickListener { onCommand(devices.id, "OPEN") }
+        btnClose.setOnClickListener { onCommand(devices.id, "CLOSE") }
+        btnStop.setOnClickListener { onCommand(devices.id, "STOP") }
         return rowView
     }
 
