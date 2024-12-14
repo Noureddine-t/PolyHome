@@ -23,7 +23,7 @@
 
         <Spinner
             android:id="@+id/spinHomes"
-            android:layout_width="304dp"
+            android:layout_width="330dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
@@ -60,13 +60,128 @@
         <ListView
             android:id="@+id/lstDevices"
             android:layout_width="match_parent"
-            android:layout_height="357dp"
+            android:layout_height="541dp"
             android:layout_marginTop="20dp"
             android:layout_weight="1"
             android:divider="@android:color/darker_gray"
             android:dividerHeight="1dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp" />
+
+        <!-- Boutons pour les modes -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp">
+
+            <!-- Bouton Mode Économie -->
+            <Button
+                android:id="@+id/btnEconomyMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mode Économie"
+                android:layout_marginEnd="5dp"
+                android:backgroundTint="@color/buttons"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"/>
+
+            <!-- Bouton Info Mode Économie (ImageButton avec une icône réduite) -->
+            <ImageButton
+                android:id="@+id/btnEconomyInfo"
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/circular_background"
+                android:contentDescription="Info Mode Économie"
+                android:scaleType="centerCrop"
+                android:src="@android:drawable/ic_dialog_info" />
+
+            <!-- Bouton Mode Sortie/Nuit -->
+            <Button
+                android:id="@+id/btnNightMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mode Sortie/Nuit"
+                android:backgroundTint="@color/buttons"
+                android:layout_marginEnd="5dp"
+                android:layout_marginStart="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"/>
+
+            <!-- Bouton Info Mode Sortie/Nuit (ImageButton avec une icône réduite) -->
+            <ImageButton
+                android:id="@+id/btnNightInfo"
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/circular_background"
+                android:src="@android:drawable/ic_dialog_info"
+                android:scaleType="centerCrop"
+                android:contentDescription="Info Mode Sortie/Nuit" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="20dp">
+
+            <!-- Bouton Mode Secours -->
+
+            <!-- Bouton Info Mode Secours (ImageButton avec une icône réduite) -->
+
+            <Button
+                android:id="@+id/btnEmergencyMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:backgroundTint="@color/buttons"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="Mode Secours" />
+
+            <ImageButton
+                android:id="@+id/btnEmergencyInfo"
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/circular_background"
+                android:src="@android:drawable/ic_dialog_info"
+                android:scaleType="centerCrop"
+                android:contentDescription="Info Mode Secours" />
+
+            <!-- Bouton Mode Alerte -->
+            <Button
+                android:id="@+id/btnAlertMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mode Alerte"
+                android:backgroundTint="@color/buttons"
+                android:layout_marginEnd="5dp"
+                android:layout_marginStart="25dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"/>
+
+            <!-- Bouton Info Mode Alerte (ImageButton avec une icône réduite) -->
+            <ImageButton
+                android:id="@+id/btnAlertInfo"
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/circular_background"
+                android:src="@android:drawable/ic_dialog_info"
+                android:scaleType="centerCrop"
+                android:contentDescription="Info Mode Alerte" />
+        </LinearLayout>
+
+
+
+
+
     </LinearLayout>
 
 </FrameLayout>

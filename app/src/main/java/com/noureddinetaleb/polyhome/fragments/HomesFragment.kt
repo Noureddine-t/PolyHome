@@ -1,11 +1,13 @@
 package com.noureddinetaleb.polyhome.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.Spinner
 import android.widget.Toast
@@ -20,7 +22,9 @@ import com.noureddinetaleb.polyhome.data.HomesData
 import com.noureddinetaleb.polyhome.data.SendCommand
 import com.noureddinetaleb.polyhome.storage.TokenStorage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -99,7 +103,6 @@ class HomesFragment : Fragment() {
         devicesListView?.adapter = devicesAdapter
     }
 
-    //TODO : Add additional functionalities: close all, open all, turn off all, turn on all...
 
     /**
      * Send command to device
@@ -117,7 +120,7 @@ class HomesFragment : Fragment() {
             withContext(Dispatchers.Main) {
                 when (responseCode) {
                     200 -> {
-                        Toast.makeText(requireContext(), "Commande envoyé avec succèss", Toast.LENGTH_SHORT).show()
+                       // Toast.makeText(requireContext(), "Commande envoyé avec succèss", Toast.LENGTH_SHORT).show()
                     }
                     400 -> {
                         Toast.makeText(requireContext(), "C: Les données fournies sont incorrectes pour charger les périphériques", Toast.LENGTH_SHORT).show()
@@ -132,6 +135,85 @@ class HomesFragment : Fragment() {
             }
         }
     }
+
+    /**
+     * Envoyer la commande "Mode Économie" à tous les appareils
+     */
+    /**
+     * Apply Economy Mode
+     * Turns off all lights in the house.
+     */
+    private fun applyEconomyMode() {
+        for (device in devices) {
+            if (device.type == "light") {
+                sendCommand(houseId, device.id, "TURN OFF")
+            }
+        }
+    }
+
+
+    /**
+     * Apply Night Mode
+     * Closes all shutters and garage doors in the house and turns off all lights.
+     */
+    private fun applyNightMode() {
+        for (device in devices) {
+            when (device.type) {
+                "sliding shutter", "rolling shutter", "garage door" -> {
+                    sendCommand(houseId, device.id, "CLOSE")
+                }
+                "light" -> {
+                    sendCommand(houseId, device.id, "TURN OFF")
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Apply Emergency Mode
+     * Opens all shutters and garage doors in the house.
+     */
+    private fun applyEmergencyMode() {
+        for (device in devices) {
+            when (device.type) {
+                "sliding shutter", "rolling shutter", "garage door" -> {
+                    sendCommand(houseId, device.id, "OPEN")
+                }
+                "light" -> {
+                    sendCommand(houseId, device.id, "TURN OFF")
+                }
+            }
+        }
+    }
+
+    /**
+     * Apply Alert Mode
+     * Flashes all lights and opens all shutters and garage doors.
+     */
+    private fun applyAlertMode() {
+        for (device in devices) {
+            when (device.type) {
+                "light" -> {
+                    mainScope.launch {
+                        repeat(10) {
+                            sendCommand(houseId, device.id, "TURN ON")
+                            delay(500)
+                            sendCommand(houseId, device.id, "TURN OFF")
+                            delay(500)
+                        }
+                        sendCommand(houseId, device.id, "TURN ON")
+
+                    }
+                }
+                "sliding shutter", "rolling shutter", "garage door" -> {
+                    sendCommand(houseId, device.id, "OPEN")
+                }
+            }
+        }
+    }
+
+
 
 
     /**
@@ -186,6 +268,63 @@ class HomesFragment : Fragment() {
         // managing devices commands
         devicesAdapter = DevicesAdapter(requireContext(), devices) { deviceId, command ->
             sendCommand(houseId, deviceId, command)
+        }
+
+        // managing info buttons for each mode
+        val economyInfoButton: ImageButton = view.findViewById(R.id.btnEconomyInfo)
+        val nightInfoButton: ImageButton = view.findViewById(R.id.btnNightInfo)
+        val emergencyInfoButton: ImageButton = view.findViewById(R.id.btnEmergencyInfo)
+        val alertInfoButton: ImageButton = view.findViewById(R.id.btnAlertInfo)
+
+        // managing mode buttons
+        val economyModeButton: Button = view.findViewById(R.id.btnEconomyMode)
+        val nightModeButton: Button = view.findViewById(R.id.btnNightMode)
+        val emergencyModeButton: Button = view.findViewById(R.id.btnEmergencyMode)
+        val alertModeButton: Button = view.findViewById(R.id.btnAlertMode)
+
+        economyModeButton.setOnClickListener {
+            applyEconomyMode()
+        }
+
+        nightModeButton.setOnClickListener {
+            applyNightMode()
+        }
+
+        emergencyModeButton.setOnClickListener {
+            applyEmergencyMode()
+        }
+
+        alertModeButton.setOnClickListener {
+            applyAlertMode()
+        }
+
+        economyInfoButton.setOnClickListener {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("Mode Économie")
+            builder.setMessage("Ce mode permet de réduire la consommation énergétique en éteignant toutes les lumières lorsque personne n'est à la maison.")
+            builder.setPositiveButton("Fermer", null)
+            builder.show()
+        }
+        nightInfoButton.setOnClickListener {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("Mode Sortie/Nuit")
+            builder.setMessage("Ce mode permet d'éteindre toutes les lumières,de fermer tous les volets et le garage lorsque vous quittez la maison ou pendant la nuit, afin d'optimiser la sécurité et la consommation d'énergie.")
+            builder.setPositiveButton("Fermer", null)
+            builder.show()
+        }
+        emergencyInfoButton.setOnClickListener {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("Mode Secours")
+            builder.setMessage("Ce mode permet d'eteindre toutes les lumières et ouvrir tous les volets/portes.Reserver uniquement pour des situations anormales, telles qu'un incendie ou une fuite de gaz.")
+            builder.setPositiveButton("Fermer", null)
+            builder.show()
+        }
+        alertInfoButton.setOnClickListener {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("Mode Alerte")
+            builder.setMessage("Ce mode fait clignoter toutes les lumières pour signaler un danger ou une situation d'urgence en plus d'ouvrir tous les volets et portes.")
+            builder.setPositiveButton("Fermer", null)
+            builder.show()
         }
 
 

@@ -58,7 +58,7 @@ class UsersFragment : Fragment() {
             withContext(Dispatchers.Main) {
                 if (responseCode == 200 && loadedUsers != null) {
                     users.clear()
-                    // Exclure les utilisateurs ayant déjà accès
+                    //Fixme: removing users with access from the list of all users is buggy not updating the list
                     val usersWithAccessLogins = usersWithAccess.map { it.userLogin }
                     users.addAll(loadedUsers.map { it.login }.filter { it !in usersWithAccessLogins })
                     updateUsersList()
@@ -103,19 +103,27 @@ class UsersFragment : Fragment() {
     /**
      * Handle 'users with access' loading success
      */
-    private fun loadUsersWithAccessSuccess(responseCode: Int, loadedUsers: List<UsersWithAccessData>?) {
+    private fun loadUsersWithAccessSuccess(responseCode: Int, loadedUsersWithAccess: List<UsersWithAccessData>?) {
         mainScope.launch {
             withContext(Dispatchers.Main) {
-                if (responseCode == 200 && loadedUsers != null) {
+                if (responseCode == 200 && loadedUsersWithAccess != null) {
                     usersWithAccess.clear()
-                    usersWithAccess.addAll(loadedUsers)
-                    usersWithAccessAdapter.notifyDataSetChanged()
+                    usersWithAccess.addAll(loadedUsersWithAccess)
+                    updateUsersWithAccessList()
                     Toast.makeText(requireContext(), "La liste des utilisateurs ayant accès a bien été retournée", Toast.LENGTH_SHORT).show()
                 } else if (responseCode == 500) {
                     Toast.makeText(requireContext(), "Access U: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(requireContext(), "Access U: Erreur est survenue", Toast.LENGTH_SHORT).show()
                 }
+            }
+        }
+    }
+
+    private fun updateUsersWithAccessList() {
+        mainScope.launch {
+            withContext(Dispatchers.Main) {
+                usersWithAccessAdapter.notifyDataSetChanged()
             }
         }
     }
@@ -131,14 +139,11 @@ class UsersFragment : Fragment() {
     /**
      * Update users with access list
      */
-    private fun updateAccess(selectedUser: String) {
+    private fun giveUserAccess(selectedUser: String) {
         val user = SendUserLogin(selectedUser)
         if (houseId != -1) {
             Api().post<SendUserLogin>(
-                "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users",
-                user,
-                ::updateAccessSuccess,
-                token
+                "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", user, ::giveUserAccessSuccess, token
             )
         } else {
             mainScope.launch {
@@ -153,21 +158,27 @@ class UsersFragment : Fragment() {
      * Handle 'update access' response then
      * Load users with access
      */
-    private fun updateAccessSuccess(responseCode: Int) {
+    private fun giveUserAccessSuccess(responseCode: Int) {
         mainScope.launch {
             withContext(Dispatchers.Main) {
-                if (responseCode == 200) {
-                    loadUsersWithAccess(houseId)
-                    loadUsers() // Recharger la liste des utilisateurs
-                    Toast.makeText(requireContext(), "Accès accordé", Toast.LENGTH_SHORT).show()
-                } else if (responseCode == 400) {
-                    Toast.makeText(requireContext(), "Up: Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
-                } else if (responseCode == 403) {
-                    Toast.makeText(requireContext(), "Up: Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison)", Toast.LENGTH_SHORT).show()
-                } else if (responseCode == 500) {
-                    Toast.makeText(requireContext(), "Up: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(requireContext(), "Up: Erreur est survenue", Toast.LENGTH_SHORT).show()
+                when (responseCode) {
+                    200 -> {
+                        Toast.makeText(requireContext(), "Accès accordé", Toast.LENGTH_SHORT).show()
+                        loadUsersWithAccess(houseId)
+                        loadUsers()
+                    }
+                    400 -> {
+                        Toast.makeText(requireContext(), "Up: Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
+                    }
+                    403 -> {
+                        Toast.makeText(requireContext(), "Up: Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison)", Toast.LENGTH_SHORT).show()
+                    }
+                    500 -> {
+                        Toast.makeText(requireContext(), "Up: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        Toast.makeText(requireContext(), "Up: Erreur est survenue", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -176,7 +187,7 @@ class UsersFragment : Fragment() {
     /**
      * Remove user access to your house
      */
-    fun removeUserAccess(selectedUser: String) {
+    private fun removeUserAccess(selectedUser: String) {
         val user = SendUserLogin(selectedUser)
         if (houseId != -1) {
             Api().delete<SendUserLogin>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", user, ::removeUserAccessSuccess, token
@@ -197,26 +208,24 @@ class UsersFragment : Fragment() {
     private fun removeUserAccessSuccess(responseCode: Int) {
         mainScope.launch {
             withContext(Dispatchers.Main) {
-                if (responseCode == 200) {
-                    loadUsersWithAccess(houseId)
-                    loadUsers() // Recharger la liste des utilisateurs
-                    Toast.makeText(requireContext(), "Suppression réalisée", Toast.LENGTH_SHORT).show()
-                } else if (responseCode == 400) {
-                    Toast.makeText(requireContext(), "D: Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
-                } else if (responseCode == 403) {
-                    Toast.makeText(
-                        requireContext(),
-                        "D: Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison)",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else if (responseCode == 500) {
-                    Toast.makeText(
-                        requireContext(),
-                        "D: Une erreur s’est produite au niveau du serveur",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    Toast.makeText(requireContext(), "D: Erreur est survenue", Toast.LENGTH_SHORT).show()
+                when (responseCode) {
+                    200 -> {
+                        Toast.makeText(requireContext(), "Suppression réalisée", Toast.LENGTH_SHORT).show()
+                        loadUsersWithAccess(houseId)
+                        loadUsers()
+                    }
+                    400 -> {
+                        Toast.makeText(requireContext(), "D: Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
+                    }
+                    403 -> {
+                        Toast.makeText(requireContext(), "D: Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison)", Toast.LENGTH_SHORT).show()
+                    }
+                    500 -> {
+                        Toast.makeText(requireContext(), "D: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        Toast.makeText(requireContext(), "D: Erreur est survenue", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -241,11 +250,11 @@ class UsersFragment : Fragment() {
         // load users list and initialize spinners
         usersAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, users)
         mainScope.launch {
-            loadUsers()
-            initializeSpinners()
             token = TokenStorage(requireContext()).read()
             loadUsersWithAccess(houseId)
             initializeUsersWithAccessList()
+            loadUsers()
+            initializeSpinners()
         }
 
         // grant access to a user to your house
@@ -253,7 +262,7 @@ class UsersFragment : Fragment() {
         val btnAdd = view.findViewById<Button>(R.id.btnAddUser)
         btnAdd.setOnClickListener {
             val selectedUser = spinUsers.selectedItem as String
-            updateAccess(selectedUser)
+            giveUserAccess(selectedUser)
         }
 
         //manage the deletion of a user
