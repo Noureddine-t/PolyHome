@@ -1,13 +1,13 @@
 package com.noureddinetaleb.polyhome.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.noureddinetaleb.polyhome.R
 import com.noureddinetaleb.polyhome.activities.DrawerActivity
 import com.noureddinetaleb.polyhome.api.Api
@@ -21,8 +21,15 @@ import kotlinx.coroutines.withContext
 
 /**
  * Main fragment
- * shows number of houses and users with access to the house (owner included)
- * @constructor Create empty Main fragment
+ *
+ * Shows number of houses and users with access to the house (owner included).
+ *
+ * @property homes The list of homes.
+ * @property usersWithAccess The list of users with access to the house.
+ * @property token The token of the user.
+ * @property houseId The house id.
+ * @property mainScope The main scope for coroutines.
+ *
  */
 class MainFragment : Fragment() {
 
@@ -33,17 +40,20 @@ class MainFragment : Fragment() {
     private val usersWithAccess = ArrayList<UsersWithAccessData>()
 
     /**
-     * Load homes
+     * Load homes from the server the user has access to.
+     *
+     * @see loadHomesSuccess
+     * @see Api
      */
     private fun loadHomes() {
         Api().get<List<HomesData>>("https://polyhome.lesmoulinsdudev.com/api/houses", ::loadHomesSuccess, token)
     }
 
     /**
-     * Handle homes loading success then
-     * Load devices once homes are uploaded
-     * @param responseCode the response code from the server
-     * @param loadedHomes the list of homes loaded from the server
+     * Handle homes loading success.
+     *
+     * @param responseCode The response code from the server.
+     * @param loadedHomes The list of homes loaded from the server.
      * @see loadUsers
      */
     private fun loadHomesSuccess(responseCode: Int, loadedHomes: List<HomesData>?) {
@@ -69,22 +79,22 @@ class MainFragment : Fragment() {
     }
 
     /**
-     * Load users with access to the house
-     * @param houseId the house id
+     * Load users with access to the house from the server.
+     *
+     * @param houseId The house id
+     * @see loadUsersSuccess
+     * @see Api
      */
     private fun loadUsers(houseId: Int) {
-        Api().get<List<UsersWithAccessData>>(
-            "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users",
-            ::loadUsersSuccess,
-            token
-        )
+        Api().get<List<UsersWithAccessData>>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", ::loadUsersSuccess, token)
     }
 
     /**
-     * Handle 'users with access' loading success
-     * @param responseCode the response code from the server
-     * @param loadedUsers the list of users with access loaded from the server
-     * @see sendDataToActivity send houseId to the activity to be used in other fragments
+     * Handle 'users with access' loading success.
+     *
+     * @param responseCode The response code from the server.
+     * @param loadedUsers The list of users with access loaded from the server.
+     * @see sendDataToActivity
      */
     private fun loadUsersSuccess(responseCode: Int, loadedUsers: List<UsersWithAccessData>?) {
         mainScope.launch {
@@ -96,11 +106,9 @@ class MainFragment : Fragment() {
                     usersWithAccessCount?.text = usersWithAccess.size.toString()
                     Toast.makeText(requireContext(), "La liste des utilisateurs ayant accès a bien été retournée (count)", Toast.LENGTH_SHORT).show()
                     sendDataToActivity()
-                }
-                else if (responseCode == 500) {
+                } else if (responseCode == 500) {
                     Toast.makeText(requireContext(), "U count: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
-                }
-                else {
+                } else {
                     Toast.makeText(requireContext(), "U count: Erreur est survenue", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -110,7 +118,7 @@ class MainFragment : Fragment() {
     /**
      * Send houseId and
      * homes list to the activity
-     * to be used in other fragments
+     * to be used in other fragments.
      */
     private fun sendDataToActivity() {
         val activity = requireActivity() as? DrawerActivity
@@ -118,17 +126,6 @@ class MainFragment : Fragment() {
         activity?.setHomesList(homes)
     }
 
-    /**
-     * Handle main page fragment creation
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return view
-     *       the fragment view
-     *       null if an exception is caught
-     *@see loadHomes
-     *
-     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -142,18 +139,13 @@ class MainFragment : Fragment() {
         return view
     }
 
-    /**
-     * Handle main page fragment creation
-     * creating buttons to redirect to other fragments (houses and users)
-     * @param view the fragment view
-     * @param savedInstanceState
-     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val housesButton = view.findViewById<Button>(R.id.manage_houses_button)
         val usersButton = view.findViewById<Button>(R.id.manage_users_button)
 
+        // Redirect to the homes fragment
         housesButton?.setOnClickListener {
             val homesFragment = HomesFragment()
             val transaction = requireActivity().supportFragmentManager.beginTransaction()
@@ -162,6 +154,7 @@ class MainFragment : Fragment() {
             transaction.commit()
         }
 
+        // Redirect to the users fragment
         usersButton?.setOnClickListener {
             val usersFragment = UsersFragment()
             val transaction = requireActivity().supportFragmentManager.beginTransaction()

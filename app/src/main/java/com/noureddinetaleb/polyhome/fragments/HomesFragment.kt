@@ -22,15 +22,21 @@ import com.noureddinetaleb.polyhome.data.HomesData
 import com.noureddinetaleb.polyhome.data.SendCommand
 import com.noureddinetaleb.polyhome.storage.TokenStorage
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * Homes fragment
- * @constructor Create empty Homes fragment
+ * Homes fragment to manage devices in selected house.
+ *
+ * @property homes The list of homes user has access to.
+ * @property token The token of the user.
+ * @property mainScope The main scope for coroutines.
+ * @property homesAdapter The adapter for homes list spinner.
+ * @property devices The list of devices in the house.
+ * @property devicesAdapter The adapter for devices list view.
+ * @property houseId The id of a chosen house.
  */
 class HomesFragment : Fragment() {
 
@@ -44,7 +50,7 @@ class HomesFragment : Fragment() {
     private var houseId = -1
 
     /**
-     * Update homes list
+     * Update homes list in the spinner.
      */
     private fun updateHomesList() {
         mainScope.launch {
@@ -55,7 +61,7 @@ class HomesFragment : Fragment() {
     }
 
     /**
-     * Initialize spinners for homes
+     * Initialize spinners for homes.
      */
     private fun initializeSpinners() {
         val spinHomes = view?.findViewById<Spinner>(R.id.spinHomes)
@@ -63,15 +69,22 @@ class HomesFragment : Fragment() {
     }
 
     /**
-     * Load devices
+     * Load devices from the server based on the chosen house.
+     *
+     * @param houseId The id of the chosen house.
+     * @see loadDevicesSuccess
+     * @see Api
      */
     private fun loadDevices(houseId: Int) {
-        Api().get<DevicesListData>(
-            "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices", ::loadDevicesSuccess, token)
+        Api().get<DevicesListData>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices", ::loadDevicesSuccess, token)
     }
 
     /**
-     * Handle devices loading success
+     * Handle devices loading success.
+     *
+     * @param responseCode The response code from the server.
+     * @param loadedDevices The list of devices loaded from the server.
+     * @see DevicesAdapter
      */
     private fun loadDevicesSuccess(responseCode: Int, loadedDevices: DevicesListData?) {
         MainScope().launch {
@@ -96,7 +109,7 @@ class HomesFragment : Fragment() {
     }
 
     /**
-     * Initialize devices list
+     * Initialize devices list.
      */
     private fun initializeDevicesList() {
         val devicesListView = view?.findViewById<ListView>(R.id.lstDevices)
@@ -105,7 +118,14 @@ class HomesFragment : Fragment() {
 
 
     /**
-     * Send command to device
+     * Send command to device based on the house id.
+     *
+     * @param houseId The id of the chosen house.
+     * @param deviceId The id of the device to send the command to.
+     * @param commandToSend The command to send.
+     * @see SendCommand
+     * @see sendCommandSuccess
+     * @see Api
      */
     private fun sendCommand(houseId: Int, deviceId: String, commandToSend: String) {
         val command = SendCommand(commandToSend)
@@ -113,35 +133,28 @@ class HomesFragment : Fragment() {
     }
 
     /**
-     * Handle command sending success
+     * Handle command sending success.
+     *
+     * @param responseCode The response code from the server.
      */
     private fun sendCommandSuccess(responseCode: Int) {
         MainScope().launch {
             withContext(Dispatchers.Main) {
                 when (responseCode) {
-                    200 -> {
-                       // Toast.makeText(requireContext(), "Commande envoyé avec succèss", Toast.LENGTH_SHORT).show()
-                    }
-                    400 -> {
-                        Toast.makeText(requireContext(), "C: Les données fournies sont incorrectes pour charger les périphériques", Toast.LENGTH_SHORT).show()
-                    }
-                    500 -> {
-                        Toast.makeText(requireContext(), "C: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
-                    }
-                    else -> {
-                        Toast.makeText(requireContext(), "C: Une erreur s’est produite", Toast.LENGTH_SHORT).show()
-                    }
+                    200 -> {}//Toast.makeText(requireContext(), "Commande envoyé avec succèss", Toast.LENGTH_SHORT).show()
+                    400 -> Toast.makeText(requireContext(), "C: Les données fournies sont incorrectes pour charger les périphériques", Toast.LENGTH_SHORT).show()
+                    500 -> Toast.makeText(requireContext(), "C: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
+                    else -> Toast.makeText(requireContext(), "C: Une erreur s’est produite", Toast.LENGTH_SHORT).show()
+
                 }
             }
         }
     }
 
     /**
-     * Envoyer la commande "Mode Économie" à tous les appareils
-     */
-    /**
-     * Apply Economy Mode
-     * Turns off all lights in the house.
+     * Apply Economy Mode: Turns off all lights in the house.
+     *
+     * @see sendCommand
      */
     private fun applyEconomyMode() {
         for (device in devices) {
@@ -153,8 +166,9 @@ class HomesFragment : Fragment() {
 
 
     /**
-     * Apply Night Mode
-     * Closes all shutters and garage doors in the house and turns off all lights.
+     * Apply Night Mode: Closes all shutters and garage door in the house and turns off all lights.
+     *
+     * @see sendCommand
      */
     private fun applyNightMode() {
         for (device in devices) {
@@ -162,6 +176,7 @@ class HomesFragment : Fragment() {
                 "sliding shutter", "rolling shutter", "garage door" -> {
                     sendCommand(houseId, device.id, "CLOSE")
                 }
+
                 "light" -> {
                     sendCommand(houseId, device.id, "TURN OFF")
                 }
@@ -171,8 +186,9 @@ class HomesFragment : Fragment() {
 
 
     /**
-     * Apply Emergency Mode
-     * Opens all shutters and garage doors in the house.
+     * Apply Emergency Mode: Opens all shutters and garage door in the house.
+     *
+     * @see sendCommand
      */
     private fun applyEmergencyMode() {
         for (device in devices) {
@@ -180,6 +196,7 @@ class HomesFragment : Fragment() {
                 "sliding shutter", "rolling shutter", "garage door" -> {
                     sendCommand(houseId, device.id, "OPEN")
                 }
+
                 "light" -> {
                     sendCommand(houseId, device.id, "TURN OFF")
                 }
@@ -188,15 +205,16 @@ class HomesFragment : Fragment() {
     }
 
     /**
-     * Apply Alert Mode
-     * Flashes all lights and opens all shutters and garage doors.
+     * Apply Alert Mode: Flashes all lights and opens all shutters and garage doors.
+     *
+     * @see sendCommand
      */
     private fun applyAlertMode() {
         for (device in devices) {
             when (device.type) {
                 "light" -> {
                     mainScope.launch {
-                        repeat(10) {
+                        repeat(20) {
                             sendCommand(houseId, device.id, "TURN ON")
                             delay(500)
                             sendCommand(houseId, device.id, "TURN OFF")
@@ -206,6 +224,7 @@ class HomesFragment : Fragment() {
 
                     }
                 }
+
                 "sliding shutter", "rolling shutter", "garage door" -> {
                     sendCommand(houseId, device.id, "OPEN")
                 }
@@ -213,38 +232,18 @@ class HomesFragment : Fragment() {
         }
     }
 
-
-
-
-    /**
-     * Handle homes fragment creation and
-     * get homes list from [DrawerActivity] to prevent sending a request to the server
-     * @param savedInstanceState saved instance state
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val drawerActivity = activity as? DrawerActivity
         homes = drawerActivity?.getHomesList() ?: ArrayList()
     }
 
-    /**
-     * Handle homes fragment creation
-     * @param inflater layout inflater
-     * @param container view group
-     * @param savedInstanceState saved instance state
-     * @return view
-     *       fragment view
-     *       null if an exception is caught
-     * @see initializeSpinners
-     * @see initializeDevicesList
-     * @see loadDevices
-     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-        ): View? {
+    ): View? {
 
-        // loading homes list and initializing spinners
+        // Loading homes list and initializing spinners
         val view = inflater.inflate(R.layout.fragment_homes, container, false)
         homesAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, homes)
         mainScope.launch {
@@ -253,7 +252,7 @@ class HomesFragment : Fragment() {
             initializeSpinners()
         }
 
-        //loading devices based on selected house
+        // Loading devices based on selected house
         val btnValidate = view.findViewById<Button>(R.id.btnValidate)
         val spinHomes = view.findViewById<Spinner>(R.id.spinHomes)
         btnValidate.setOnClickListener {
@@ -265,38 +264,27 @@ class HomesFragment : Fragment() {
             }
         }
 
-        // managing devices commands
+        // Managing devices commands
         devicesAdapter = DevicesAdapter(requireContext(), devices) { deviceId, command ->
             sendCommand(houseId, deviceId, command)
         }
 
-        // managing info buttons for each mode
-        val economyInfoButton: ImageButton = view.findViewById(R.id.btnEconomyInfo)
-        val nightInfoButton: ImageButton = view.findViewById(R.id.btnNightInfo)
-        val emergencyInfoButton: ImageButton = view.findViewById(R.id.btnEmergencyInfo)
-        val alertInfoButton: ImageButton = view.findViewById(R.id.btnAlertInfo)
-
-        // managing mode buttons
+        // Managing mode buttons
         val economyModeButton: Button = view.findViewById(R.id.btnEconomyMode)
         val nightModeButton: Button = view.findViewById(R.id.btnNightMode)
         val emergencyModeButton: Button = view.findViewById(R.id.btnEmergencyMode)
         val alertModeButton: Button = view.findViewById(R.id.btnAlertMode)
 
-        economyModeButton.setOnClickListener {
-            applyEconomyMode()
-        }
+        economyModeButton.setOnClickListener { applyEconomyMode() }
+        nightModeButton.setOnClickListener { applyNightMode() }
+        emergencyModeButton.setOnClickListener { applyEmergencyMode() }
+        alertModeButton.setOnClickListener { applyAlertMode() }
 
-        nightModeButton.setOnClickListener {
-            applyNightMode()
-        }
-
-        emergencyModeButton.setOnClickListener {
-            applyEmergencyMode()
-        }
-
-        alertModeButton.setOnClickListener {
-            applyAlertMode()
-        }
+        // Managing info buttons for each mode
+        val economyInfoButton: ImageButton = view.findViewById(R.id.btnEconomyInfo)
+        val nightInfoButton: ImageButton = view.findViewById(R.id.btnNightInfo)
+        val emergencyInfoButton: ImageButton = view.findViewById(R.id.btnEmergencyInfo)
+        val alertInfoButton: ImageButton = view.findViewById(R.id.btnAlertInfo)
 
         economyInfoButton.setOnClickListener {
             val builder = AlertDialog.Builder(requireContext())
@@ -326,7 +314,6 @@ class HomesFragment : Fragment() {
             builder.setPositiveButton("Fermer", null)
             builder.show()
         }
-
 
         return view
     }

@@ -25,8 +25,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * Fragment for users
- * @constructor Create empty Users fragment
+ * Fragment for users management
+ *
+ * @property users The list of all users.
+ * @property mainScope The main scope for coroutines.
+ * @property token The token of the user.
+ * @property usersAdapter The adapter for users list spinner.
+ * @property usersWithAccess The list of users with access to the house.
+ * @property usersWithAccessAdapter The adapter for users with access list.
+ * @property houseId The owner's house id.
  */
 class UsersFragment : Fragment() {
 
@@ -38,19 +45,24 @@ class UsersFragment : Fragment() {
     private val usersWithAccess = ArrayList<UsersWithAccessData>()
     private lateinit var usersWithAccessAdapter: UsersAdapter
 
-    private var houseId : Int = -1
+    private var houseId: Int = -1
 
     /**
-     * Load users in order to get login
+     * Load all app users from server in order to get their login.
+     *
+     * @see loadUsersSuccess
+     * @see Api
      */
     private fun loadUsers() {
         Api().get<List<UsersLoginData>>("https://polyhome.lesmoulinsdudev.com/api/users", ::loadUsersSuccess)
     }
 
     /**
-     * Handle users loading success
-     * @param responseCode the response code from the server
-     * @param loadedUsers the list of users loaded from the server
+     * Handle all users loading success.
+     *
+     * @param responseCode the response code from the server.
+     * @param loadedUsers the list of all users loaded from the server.
+     *
      * @see updateUsersList
      */
     private fun loadUsersSuccess(responseCode: Int, loadedUsers: List<UsersLoginData>?) {
@@ -73,7 +85,7 @@ class UsersFragment : Fragment() {
     }
 
     /**
-     * Update users list
+     * Update users list.
      */
     private fun updateUsersList() {
         mainScope.launch {
@@ -84,7 +96,7 @@ class UsersFragment : Fragment() {
     }
 
     /**
-     * Initialize spinners for users
+     * Initialize spinners for all users.
      */
     private fun initializeSpinners() {
         val spinHomes = view?.findViewById<Spinner>(R.id.spinUsers)
@@ -92,16 +104,22 @@ class UsersFragment : Fragment() {
     }
 
     /**
-     * Load users with access
+     * Load users with access to the owner's house from the server.
+     *
+     * @param houseId the owner's house id.
+     * @see loadUsersWithAccessSuccess
+     * @see Api
      */
     private fun loadUsersWithAccess(houseId: Int) {
-        Api().get<List<UsersWithAccessData>>(
-            "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", ::loadUsersWithAccessSuccess, token
-        )
+        Api().get<List<UsersWithAccessData>>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", ::loadUsersWithAccessSuccess, token)
     }
 
     /**
-     * Handle 'users with access' loading success
+     * Handle 'users with access' loading success.
+     *
+     * @param responseCode the response code from the server.
+     * @param loadedUsersWithAccess the list of users with access to the owner's house loaded from the server.
+     * @see updateUsersWithAccessList
      */
     private fun loadUsersWithAccessSuccess(responseCode: Int, loadedUsersWithAccess: List<UsersWithAccessData>?) {
         mainScope.launch {
@@ -120,6 +138,9 @@ class UsersFragment : Fragment() {
         }
     }
 
+    /**
+     * Update users with access list.
+     */
     private fun updateUsersWithAccessList() {
         mainScope.launch {
             withContext(Dispatchers.Main) {
@@ -129,7 +150,7 @@ class UsersFragment : Fragment() {
     }
 
     /**
-     * Initialize users with access list
+     * Initialize users with access list.
      */
     private fun initializeUsersWithAccessList() {
         val usersWithAccessListView = view?.findViewById<ListView>(R.id.lstUsersWithAccess)
@@ -137,14 +158,17 @@ class UsersFragment : Fragment() {
     }
 
     /**
-     * Update users with access list
+     * Grant to the chosen user access to your house.
+     *
+     * @param selectedUser the user login to give access to.
+     * @see SendUserLogin
+     * @see giveUserAccessSuccess
+     * @see Api
      */
     private fun giveUserAccess(selectedUser: String) {
         val user = SendUserLogin(selectedUser)
         if (houseId != -1) {
-            Api().post<SendUserLogin>(
-                "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", user, ::giveUserAccessSuccess, token
-            )
+            Api().post<SendUserLogin>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", user, ::giveUserAccessSuccess, token)
         } else {
             mainScope.launch {
                 withContext(Dispatchers.Main) {
@@ -155,8 +179,11 @@ class UsersFragment : Fragment() {
     }
 
     /**
-     * Handle 'update access' response then
-     * Load users with access
+     * Handle 'update access' response then load users with access
+     *
+     * @param responseCode the response code from the server.
+     * @see loadUsersWithAccess
+     * @see loadUsers
      */
     private fun giveUserAccessSuccess(responseCode: Int) {
         mainScope.launch {
@@ -167,31 +194,29 @@ class UsersFragment : Fragment() {
                         loadUsersWithAccess(houseId)
                         loadUsers()
                     }
-                    400 -> {
-                        Toast.makeText(requireContext(), "Up: Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
-                    }
-                    403 -> {
-                        Toast.makeText(requireContext(), "Up: Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison)", Toast.LENGTH_SHORT).show()
-                    }
-                    500 -> {
-                        Toast.makeText(requireContext(), "Up: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
-                    }
-                    else -> {
-                        Toast.makeText(requireContext(), "Up: Erreur est survenue", Toast.LENGTH_SHORT).show()
-                    }
+
+                    400 -> Toast.makeText(requireContext(), "Up: Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
+                    403 -> Toast.makeText(requireContext(), "Up: Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison)", Toast.LENGTH_SHORT).show()
+                    500 -> Toast.makeText(requireContext(), "Up: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
+                    else -> Toast.makeText(requireContext(), "Up: Erreur est survenue", Toast.LENGTH_SHORT).show()
+
                 }
             }
         }
     }
 
     /**
-     * Remove user access to your house
+     * Remove to a user access to the owner's house.
+     *
+     * @param selectedUser the user login to remove access to.
+     * @see SendUserLogin
+     * @see removeUserAccessSuccess
+     * @see Api
      */
     private fun removeUserAccess(selectedUser: String) {
         val user = SendUserLogin(selectedUser)
         if (houseId != -1) {
-            Api().delete<SendUserLogin>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", user, ::removeUserAccessSuccess, token
-            )
+            Api().delete<SendUserLogin>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", user, ::removeUserAccessSuccess, token)
         } else {
             mainScope.launch {
                 withContext(Dispatchers.Main) {
@@ -202,8 +227,11 @@ class UsersFragment : Fragment() {
     }
 
     /**
-     * Handle 'remove user access' response then
-     * Load users with access
+     * Handle 'remove user access' response then reload users with access.
+     *
+     * @param responseCode the response code from the server.
+     * @see loadUsersWithAccess
+     * @see loadUsers
      */
     private fun removeUserAccessSuccess(responseCode: Int) {
         mainScope.launch {
@@ -214,28 +242,16 @@ class UsersFragment : Fragment() {
                         loadUsersWithAccess(houseId)
                         loadUsers()
                     }
-                    400 -> {
-                        Toast.makeText(requireContext(), "D: Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
-                    }
-                    403 -> {
-                        Toast.makeText(requireContext(), "D: Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison)", Toast.LENGTH_SHORT).show()
-                    }
-                    500 -> {
-                        Toast.makeText(requireContext(), "D: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
-                    }
-                    else -> {
-                        Toast.makeText(requireContext(), "D: Erreur est survenue", Toast.LENGTH_SHORT).show()
-                    }
+
+                    400 -> Toast.makeText(requireContext(), "D: Les données fournies sont incorrectes", Toast.LENGTH_SHORT).show()
+                    403 -> Toast.makeText(requireContext(), "D: Accès interdit (token invalide ou ne correspondant pas au propriétaire de la maison)", Toast.LENGTH_SHORT).show()
+                    500 -> Toast.makeText(requireContext(), "D: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
+                    else -> Toast.makeText(requireContext(), "D: Erreur est survenue", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
-    /**
-     * Handle  users fragment creation and
-     * Get houseId from [DrawerActivity] to prevent sending requests again
-     * @param savedInstanceState the saved instance state
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val drawerActivity = activity as? DrawerActivity
@@ -247,7 +263,8 @@ class UsersFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_users, container, false)
-        // load users list and initialize spinners
+
+        // Load users with access list and initialize spinners for all users
         usersAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, users)
         mainScope.launch {
             token = TokenStorage(requireContext()).read()
@@ -257,7 +274,7 @@ class UsersFragment : Fragment() {
             initializeSpinners()
         }
 
-        // grant access to a user to your house
+        // Grant access to a user to the owner's house
         val spinUsers = view.findViewById<Spinner>(R.id.spinUsers)
         val btnAdd = view.findViewById<Button>(R.id.btnAddUser)
         btnAdd.setOnClickListener {
@@ -265,12 +282,13 @@ class UsersFragment : Fragment() {
             giveUserAccess(selectedUser)
         }
 
-        //manage the deletion of a user
-        usersWithAccessAdapter = UsersAdapter(requireContext(), usersWithAccess){ userLogin ->
+        //Manage the removal of user access to the owner's house
+        usersWithAccessAdapter = UsersAdapter(requireContext(), usersWithAccess) { userLogin ->
             val alertDialog = AlertDialog.Builder(context)
                 .setTitle("Confirmation de suppression")
                 .setMessage("Êtes-vous sûr de vouloir supprimer l'utilisateur $userLogin ? Cette action est irréversible.")
-                .setPositiveButton("Confirmer") { dialog, _ -> removeUserAccess(userLogin)
+                .setPositiveButton("Confirmer") { dialog, _ ->
+                    removeUserAccess(userLogin)
                     dialog.dismiss()
                 }
                 .setNegativeButton("Annuler") { dialog, _ -> dialog.dismiss() }

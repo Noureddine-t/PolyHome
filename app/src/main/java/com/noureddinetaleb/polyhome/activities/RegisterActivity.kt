@@ -12,48 +12,47 @@ import com.noureddinetaleb.polyhome.api.Api
 import com.noureddinetaleb.polyhome.data.RegisterData
 
 /**
- * Register activity
+ * Register activity handling register requests.
  */
 class RegisterActivity : AppCompatActivity() {
 
     /**
-     * Handle register request
+     * Handle register request.
+     *
+     * @see RegisterData Class handling register data.
+     * @see registerSuccess Function handling register response.
+     * @see Api class handling API requests.
      */
     private fun register() {
         val login = findViewById<EditText>(R.id.txtRegisterName).text.toString()
         val password = findViewById<EditText>(R.id.txtRegisterPassword).text.toString()
         val registerData = RegisterData(login, password)
-        Api().post(
-            "https://polyhome.lesmoulinsdudev.com/api/users/register",
-            registerData,
-            ::registerSuccess,
-            intent.getStringExtra("TOKEN")
-        )
+        Api().post("https://polyhome.lesmoulinsdudev.com/api/users/register", registerData, ::registerSuccess, intent.getStringExtra("TOKEN"))
     }
 
     /**
      * Handle register response
+     *
+     * @param responseCode The response code.
      */
     private fun registerSuccess(responseCode: Int) {
         runOnUiThread {
-            if (responseCode == 200) {
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent)
-                Toast.makeText(this, "Le compte a bien été créé", Toast.LENGTH_SHORT).show()
-            } else if (responseCode == 409) {
-                Toast.makeText(this, "Le login est déjà utilisé par un autre compte", Toast.LENGTH_SHORT).show()
-            } else if (responseCode == 500)
-                Toast.makeText(this, "R: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
-            else {
-                Toast.makeText(this, "R: Erreur lors de l'inscription", Toast.LENGTH_SHORT).show()
+            when (responseCode) {
+                200 -> {
+                    val intent = Intent(this, LoginActivity::class.java)
+                    startActivity(intent)
+                    Toast.makeText(this, "Le compte a bien été créé", Toast.LENGTH_SHORT).show()
+                }
+
+                409 -> Toast.makeText(this, "Le login est déjà utilisé par un autre compte", Toast.LENGTH_SHORT).show()
+                500 -> Toast.makeText(this, "R: Une erreur s’est produite au niveau du serveur", Toast.LENGTH_SHORT).show()
+                else -> {
+                    Toast.makeText(this, "R: Erreur lors de l'inscription", Toast.LENGTH_SHORT).show()
+                }
             }
         }
-
     }
 
-    /**
-     * Create the activity
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
@@ -63,9 +62,9 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     /**
-     * Go to login activity
+     * Redirect to login page on click.
      */
-    public fun goToLogin(view: View) {
+    fun goToLogin(view: View) {
         finish();
     }
 }

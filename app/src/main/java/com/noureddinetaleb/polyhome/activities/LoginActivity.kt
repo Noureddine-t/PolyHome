@@ -18,13 +18,19 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 /**
- * Login activity
+ * Login activity handling login requests.
+ *
+ * @property mainScope The main scope for coroutines
  */
 class LoginActivity : AppCompatActivity() {
     private val mainScope = MainScope()
 
     /**
-     * Handle login request
+     * Handle login request.
+     *
+     * @see TokenData Class handling token data.
+     * @see loginSuccess Function handling login response.
+     * @see Api Class handling API requests.
      */
     private fun login() {
         val login = findViewById<EditText>(R.id.txtUserName).text.toString()
@@ -35,7 +41,10 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
-     * Handle login response
+     * Handle login response.
+     *
+     * @param responseCode The response code.
+     * @param token The token data received.
      */
     private fun loginSuccess(responseCode: Int, token: TokenData?) {
         runOnUiThread {
@@ -60,9 +69,10 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
-     * Save token in the storage
-     * @param token the token to save
-     * @see TokenStorage class handling token storage
+     * Save token in the storage.
+     *
+     * @param token The user token to save.
+     * @see TokenStorage Class handling token storage.
      */
     private fun saveToken(token: String?) {
         val tokenStorage = TokenStorage(this)
@@ -74,9 +84,10 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
-     * Save username in the storage
-     * @param username the username to save
-     * @see UsernameStorage class handling username storage
+     * Save username in the storage.
+     *
+     * @param username The username to save
+     * @see UsernameStorage Class handling username storage.
      */
     private fun saveUsername(username: String?) {
         val usernameStorage = UsernameStorage(this)
@@ -89,11 +100,11 @@ class LoginActivity : AppCompatActivity() {
 
 
     /**
-     * Load token and username from storage
-     * Redirect to main activity if token and username are found
-     * @see TokenStorage class handling token storage
-     * @see UsernameStorage class handling username storage
-     * @see DrawerActivity class handling main activity
+     * Load token and username from storage, if found redirect to main activity, otherwise do nothing.
+     *
+     * @see TokenStorage Class handling token storage.
+     * @see UsernameStorage Class handling username storage.
+     * @see DrawerActivity Class handling main activity.
      */
     private fun loadTokenAndUsername() {
         val tokenStorage = TokenStorage(this)
@@ -114,19 +125,11 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-
-    /**
-     * Load token when the activity is resumed
-     */
     override fun onResume() {
         super.onResume()
         loadTokenAndUsername()
     }
 
-    /**
-     * Create the activity
-     * @param savedInstanceState the saved instance state
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) // Prevent Dark Mode to being forced on the app.
 
@@ -139,11 +142,12 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
-     * Redirect to the register page on click
-     * @param view the view clicked
-     * @see RegisterActivity class handling register activity
+     * Redirect to the register page on click.
+     *
+     * @param view The view clicked.
+     * @see RegisterActivity Class handling register activity.
      */
-    public fun registerNewAccount(view: View) {
+    fun registerNewAccount(view: View) {
         val intent = Intent(this, RegisterActivity::class.java);
         startActivity(intent);
     }

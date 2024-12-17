@@ -1,10 +1,11 @@
 package com.noureddinetaleb.polyhome.data
 
 /**
- * Data class for homes data
- * @property houseId the id of the house
- * @property owner the owner of the house
- * @constructor Create empty Homes data
+ * Data class representing the data of a house.
+ *
+ * @property houseId The id of the house.
+ * @property owner Tells whether the user is the owner of the house or not (true if owner, false otherwise).
+ * @constructor Initializes a `HomesData` object with the specified properties.
  */
 data class HomesData(
     val houseId: Int,

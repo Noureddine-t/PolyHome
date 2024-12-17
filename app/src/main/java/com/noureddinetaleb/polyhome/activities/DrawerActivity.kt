@@ -13,36 +13,31 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.noureddinetaleb.polyhome.R
 import com.noureddinetaleb.polyhome.data.HomesData
-import com.noureddinetaleb.polyhome.fragments.MainFragment
 import com.noureddinetaleb.polyhome.fragments.HomesFragment
+import com.noureddinetaleb.polyhome.fragments.MainFragment
 import com.noureddinetaleb.polyhome.fragments.UsersFragment
 import com.noureddinetaleb.polyhome.storage.TokenStorage
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 /**
- * Drawer activity
- * @constructor Create empty Drawer activity
- * @see NavigationView.OnNavigationItemSelectedListener
- * @see AppCompatActivity
- * @property drawerLayout the drawer layout for the activity
- * @property mainScope the main scope for coroutines
- * @property houseId the houseId to share between fragments
- * @property homes the homes list to share between fragments
+ * Drawer activity.
+ *
+ * @constructor Create empty Drawer activity.
+ * @property drawerLayout The drawer layout for the activity.
+ * @property mainScope The main scope for coroutines.
+ * @property houseId The houseId to share between fragments.
+ * @property homes The homes list to share between fragments.
+ *@see NavigationView.OnNavigationItemSelectedListener
+ *@see AppCompatActivity
  */
 class DrawerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var drawerLayout: DrawerLayout
     private val mainScope = MainScope()
-
-    // Data to share between fragments
     private var houseId: Int = -1
     private var homes = ArrayList<HomesData>()
 
-    /**
-     * Create the activity for drawer layout
-     * @param savedInstanceState the saved instance state
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_drawer)
@@ -72,46 +67,39 @@ class DrawerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
     }
 
     /**
-     * Set houseId
-     * @param data the houseId
+     * Set houseId.
+     * @param data The houseId.
      */
     fun setHouseId(data: Int) {
         houseId = data
     }
 
     /**
-     * Get houseId
-     * @return houseId
+     * Get houseId.
+     * @return houseId.
      */
     fun getHouseId(): Int {
         return houseId
     }
 
     /**
-     * Set homes list
-     * @param data the homes list
+     * Set homes list.
+     * @param data The homes list.
      */
     fun setHomesList(data: ArrayList<HomesData>) {
         homes = data
     }
 
     /**
-     * Get homes list
-     * @return homes list
+     * Get homes list.
+     * @return homes list.
      */
     fun getHomesList(): ArrayList<HomesData> {
         return homes
     }
 
-    /**
-     * Handle navigation item selection
-     * @param item selected item
-     * @return true if the item is selected
-     *        false otherwise
-     */
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val mainFragment =
-            supportFragmentManager.findFragmentByTag(MainFragment::class.java.simpleName) as? MainFragment
+        val mainFragment = supportFragmentManager.findFragmentByTag(MainFragment::class.java.simpleName) as? MainFragment
 
         val fragment = when (item.itemId) {
             R.id.nav_home -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, MainFragment())
@@ -136,13 +124,6 @@ class DrawerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
         return true
     }
 
-    /**
-     * Handle logout
-     * Redirect to login activity
-     * Clear token storage
-     * Clear username storage
-     * @param item selected item
-     */
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
@@ -152,15 +133,18 @@ class DrawerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
     }
 
     /**
-     * Handle logout
-     * Redirect to login activity
-     * Clear token storage
-     * Clear username storage
+     * Handle logout.
+     *
+     * Redirect to login activity.
+     *
+     * Clear token storage and username storage.
      */
     private fun logout() {
         val tokenStorage = TokenStorage(this)
+        val loginStorage = TokenStorage(this)
         mainScope.launch {
             tokenStorage.write("")
+            loginStorage.write("")
             val intent = Intent(this@DrawerActivity, LoginActivity::class.java)
             startActivity(intent)
             finish()

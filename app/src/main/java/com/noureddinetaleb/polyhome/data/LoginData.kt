@@ -1,11 +1,11 @@
 package com.noureddinetaleb.polyhome.data
 
-
 /**
- * Data class for login data
- * @property login the name of the user
- * @property password the password of the user
- * @constructor Create empty Login data
+ * Data class representing the login data.
+ *
+ * @property login The name of the user.
+ * @property password The password of the user.
+ * @constructor Initializes a `LoginData` object with the specified properties.
  */
 data class LoginData(
     val login: String,
