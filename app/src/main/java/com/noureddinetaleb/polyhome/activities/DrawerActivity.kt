@@ -137,7 +137,7 @@ class DrawerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
      *
      * Redirect to login activity.
      *
-     * Clear token storage and username storage.
+     * Clear saved token and username.
      */
     private fun logout() {
         val tokenStorage = TokenStorage(this)
