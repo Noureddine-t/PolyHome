@@ -18,6 +18,7 @@ import com.noureddinetaleb.polyhome.api.Api
 import com.noureddinetaleb.polyhome.data.SendUserLogin
 import com.noureddinetaleb.polyhome.data.UsersLoginData
 import com.noureddinetaleb.polyhome.data.UsersWithAccessData
+import com.noureddinetaleb.polyhome.utils.removeFirstMatching
 import com.noureddinetaleb.polyhome.storage.TokenStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -60,8 +61,8 @@ class UsersFragment : Fragment() {
     /**
      * Handle all users loading success.
      *
-     * @param responseCode the response code from the server.
-     * @param loadedUsers the list of all users loaded from the server.
+     * @param responseCode The response code from the server.
+     * @param loadedUsers The list of all users loaded from the server.
      *
      * @see updateUsersList
      */
@@ -70,7 +71,6 @@ class UsersFragment : Fragment() {
             withContext(Dispatchers.Main) {
                 if (responseCode == 200 && loadedUsers != null) {
                     users.clear()
-                    //Fixme: removing users with access from the list of all users is buggy not updating the list
                     val usersWithAccessLogins = usersWithAccess.map { it.userLogin }
                     users.addAll(loadedUsers.map { it.login }.filter { it !in usersWithAccessLogins })
                     updateUsersList()
@@ -106,7 +106,7 @@ class UsersFragment : Fragment() {
     /**
      * Load users with access to the owner's house from the server.
      *
-     * @param houseId the owner's house id.
+     * @param houseId The owner's house id.
      * @see loadUsersWithAccessSuccess
      * @see Api
      */
@@ -117,8 +117,8 @@ class UsersFragment : Fragment() {
     /**
      * Handle 'users with access' loading success.
      *
-     * @param responseCode the response code from the server.
-     * @param loadedUsersWithAccess the list of users with access to the owner's house loaded from the server.
+     * @param responseCode The response code from the server.
+     * @param loadedUsersWithAccess The list of users with access to the owner's house loaded from the server.
      * @see updateUsersWithAccessList
      */
     private fun loadUsersWithAccessSuccess(responseCode: Int, loadedUsersWithAccess: List<UsersWithAccessData>?) {
@@ -160,7 +160,7 @@ class UsersFragment : Fragment() {
     /**
      * Grant to the chosen user access to your house.
      *
-     * @param selectedUser the user login to give access to.
+     * @param selectedUser The user login to give access to.
      * @see SendUserLogin
      * @see giveUserAccessSuccess
      * @see Api
@@ -168,7 +168,7 @@ class UsersFragment : Fragment() {
     private fun giveUserAccess(selectedUser: String) {
         val user = SendUserLogin(selectedUser)
         if (houseId != -1) {
-            Api().post<SendUserLogin>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", user, ::giveUserAccessSuccess, token)
+            Api().post<SendUserLogin>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", user, { responseCode -> giveUserAccessSuccess(responseCode = responseCode, addedUserLogin = selectedUser) }, token)
         } else {
             mainScope.launch {
                 withContext(Dispatchers.Main) {
@@ -181,16 +181,18 @@ class UsersFragment : Fragment() {
     /**
      * Handle 'update access' response then load users with access
      *
-     * @param responseCode the response code from the server.
+     * @param responseCode The response code from the server.
+     * @param addedUserLogin The user login to give access to.
      * @see loadUsersWithAccess
      * @see loadUsers
      */
-    private fun giveUserAccessSuccess(responseCode: Int) {
+    private fun giveUserAccessSuccess(responseCode: Int, addedUserLogin: String) {
         mainScope.launch {
             withContext(Dispatchers.Main) {
                 when (responseCode) {
                     200 -> {
                         Toast.makeText(requireContext(), "Accès accordé", Toast.LENGTH_SHORT).show()
+                        usersWithAccess.add(UsersWithAccessData(addedUserLogin, 0))
                         loadUsersWithAccess(houseId)
                         loadUsers()
                     }
@@ -216,7 +218,7 @@ class UsersFragment : Fragment() {
     private fun removeUserAccess(selectedUser: String) {
         val user = SendUserLogin(selectedUser)
         if (houseId != -1) {
-            Api().delete<SendUserLogin>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", user, ::removeUserAccessSuccess, token)
+            Api().delete<SendUserLogin>("https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users", user, { responseCode -> removeUserAccessSuccess(responseCode = responseCode, deletedUserLogin = selectedUser) }, token)
         } else {
             mainScope.launch {
                 withContext(Dispatchers.Main) {
@@ -230,15 +232,18 @@ class UsersFragment : Fragment() {
      * Handle 'remove user access' response then reload users with access.
      *
      * @param responseCode the response code from the server.
+     * @param deletedUserLogin the user login to remove access to.
      * @see loadUsersWithAccess
      * @see loadUsers
+     * @see removeFirstMatching
      */
-    private fun removeUserAccessSuccess(responseCode: Int) {
+    private fun removeUserAccessSuccess(responseCode: Int, deletedUserLogin: String) {
         mainScope.launch {
             withContext(Dispatchers.Main) {
                 when (responseCode) {
                     200 -> {
                         Toast.makeText(requireContext(), "Suppression réalisée", Toast.LENGTH_SHORT).show()
+                        usersWithAccess.removeFirstMatching { it.userLogin == deletedUserLogin };
                         loadUsersWithAccess(houseId)
                         loadUsers()
                     }

@@ -57,6 +57,7 @@
             android:textStyle="bold"
             android:paddingTop="20dp"/>
 
+        <!-- Boutons pour les modes -->
         <ListView
             android:id="@+id/lstDevices"
             android:layout_width="match_parent"
@@ -68,7 +69,6 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp" />
 
-        <!-- Boutons pour les modes -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
