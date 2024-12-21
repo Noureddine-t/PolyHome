@@ -7,40 +7,44 @@ PolyHome is an Android home automation application designed to control connected
 
 ## Implemented Features  
 ### Core Features  
-1. **User Account**  
+1. **User Account**  [screenshots](#login-and-register)
    - Create an account with login and password.  
    - Login using an authentication token stored locally to avoid re-entering credentials after the first login.  
    - Log out from the application.
 
-2. **Home Page**  
+2. **Home Page**  [screenshots](#home-page)
    - Displays the number of houses the user can control *(bonus)*.  
    - Displays the number of users with access to the user's house *(bonus)*.  
 
-3. **House List**  
+3. **House List**  [screenshots](#manage-users-and-devices)
    - Shows houses associated with the user, whether as an owner or guest *(bonus)*.  
 
-4. **User Management**  
+4. **User Management**  [screenshots](#manage-users-and-devices)
    - List users who currently have access to the house *(bonus)*.  
    - Grant access to a house to another user *(bonus)*.  
    - Revoke access for specific users *(bonus)*.  
 
-5. **Connected Devices**  
+5. **Connected Devices**  [screenshots](#manage-users-and-devices)
    - Display the list of devices in a house.  
    - Send commands to devices (lights, shutters, doors, etc.).  
    - Control devices in houses where the user has access *(bonus)*.  
 
 ### Bonus Features  
-1. **Predefined Modes**  
+1. **Predefined Modes**  [screenshots](#manage-users-and-devices)
    - **Economy Mode**: Turns off all lights to reduce energy consumption.  
    - **Night/Exit Mode**: Turns off all lights and closes all shutters and doors.  
    - **Emergency Mode**: Opens all doors and shutters and turns off all lights.  
    - **Alert Mode**: Blinks all lights and opens all shutters and doors.  
 
-2. **Enhanced User Interface**  
+2. **Enhanced User Interface** [screenshots](#screenshots)
    - Informational buttons provide contextual explanations for actions.  
    - Ergonomic and user-friendly design for seamless navigation.  
 
-## Installation  
+
+## Download
+Download the latest version of the PolyHome application [here](https://github.com/Noureddine-t/PolyHome/releases/tag/v1.0.0-official).
+
+## Or Install  
 
 1. Open the project in **Android Studio**.  
 
@@ -55,6 +59,7 @@ PolyHome is an Android home automation application designed to control connected
 4. Make sure to open the virtual model of the house in a browser using the following link:  
 
 [https://polyhome.lesmoulinsdudev.com?houseId=`<houseId>`](https://polyhome.lesmoulinsdudev.com?houseId=<houseId>) Replace `<houseId>` with the corresponding house ID you want to control.
+
 
 ## Screenshots
 
