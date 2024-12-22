@@ -214,7 +214,7 @@ class HomesFragment : Fragment() {
             when (device.type) {
                 "light" -> {
                     mainScope.launch {
-                        repeat(20) {
+                        repeat(12) {
                             sendCommand(houseId, device.id, "TURN ON")
                             delay(500)
                             sendCommand(houseId, device.id, "TURN OFF")
@@ -252,6 +252,28 @@ class HomesFragment : Fragment() {
             initializeSpinners()
         }
 
+        // Mode buttons
+        val economyModeButton: Button = view.findViewById(R.id.btnEconomyMode)
+        val nightModeButton: Button = view.findViewById(R.id.btnNightMode)
+        val emergencyModeButton: Button = view.findViewById(R.id.btnEmergencyMode)
+        val alertModeButton: Button = view.findViewById(R.id.btnAlertMode)
+
+        // Info buttons for each mode
+        val economyInfoButton: ImageButton = view.findViewById(R.id.btnEconomyInfo)
+        val nightInfoButton: ImageButton = view.findViewById(R.id.btnNightInfo)
+        val emergencyInfoButton: ImageButton = view.findViewById(R.id.btnEmergencyInfo)
+        val alertInfoButton: ImageButton = view.findViewById(R.id.btnAlertInfo)
+
+        // Hiding mode buttons and info buttons
+        economyModeButton.visibility = View.GONE
+        nightModeButton.visibility = View.GONE
+        emergencyModeButton.visibility = View.GONE
+        alertModeButton.visibility = View.GONE
+        economyInfoButton.visibility = View.GONE
+        nightInfoButton.visibility = View.GONE
+        emergencyInfoButton.visibility = View.GONE
+        alertInfoButton.visibility = View.GONE
+
         // Loading devices based on selected house
         val btnValidate = view.findViewById<Button>(R.id.btnValidate)
         val spinHomes = view.findViewById<Spinner>(R.id.spinHomes)
@@ -262,6 +284,15 @@ class HomesFragment : Fragment() {
             mainScope.launch {
                 initializeDevicesList()
             }
+            // Showing mode buttons and info buttons
+            economyModeButton.visibility = View.VISIBLE
+            nightModeButton.visibility = View.VISIBLE
+            emergencyModeButton.visibility = View.VISIBLE
+            alertModeButton.visibility = View.VISIBLE
+            economyInfoButton.visibility = View.VISIBLE
+            nightInfoButton.visibility = View.VISIBLE
+            emergencyInfoButton.visibility = View.VISIBLE
+            alertInfoButton.visibility = View.VISIBLE
         }
 
         // Managing devices commands
@@ -269,23 +300,12 @@ class HomesFragment : Fragment() {
             sendCommand(houseId, deviceId, command)
         }
 
-        // Managing mode buttons
-        val economyModeButton: Button = view.findViewById(R.id.btnEconomyMode)
-        val nightModeButton: Button = view.findViewById(R.id.btnNightMode)
-        val emergencyModeButton: Button = view.findViewById(R.id.btnEmergencyMode)
-        val alertModeButton: Button = view.findViewById(R.id.btnAlertMode)
-
         economyModeButton.setOnClickListener { applyEconomyMode() }
         nightModeButton.setOnClickListener { applyNightMode() }
         emergencyModeButton.setOnClickListener { applyEmergencyMode() }
         alertModeButton.setOnClickListener { applyAlertMode() }
 
         // Managing info buttons for each mode
-        val economyInfoButton: ImageButton = view.findViewById(R.id.btnEconomyInfo)
-        val nightInfoButton: ImageButton = view.findViewById(R.id.btnNightInfo)
-        val emergencyInfoButton: ImageButton = view.findViewById(R.id.btnEmergencyInfo)
-        val alertInfoButton: ImageButton = view.findViewById(R.id.btnAlertInfo)
-
         economyInfoButton.setOnClickListener {
             val builder = AlertDialog.Builder(requireContext())
             builder.setTitle("Mode Économie")
