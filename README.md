@@ -42,7 +42,7 @@ PolyHome is an Android home automation application designed to control connected
 
 
 ## Download
-Download the latest version of the PolyHome application [here](https://github.com/Noureddine-t/PolyHome/releases/tag/v1.0.0-official).
+Download the latest version of the PolyHome application [here](https://github.com/Noureddine-t/PolyHome/releases/).
 
 ## Or Install  
 
@@ -76,4 +76,6 @@ Download the latest version of the PolyHome application [here](https://github.co
 
 This project was developed as part of the **Mobile Programming** course at the **University of Burgundy**.  
 
-- **Name**: Noureddine-T
+- **Name**: Nour Eddine TALEB  
+- **Year**: 4th year of Engineering Cycle
+-  **Specialization**: Software Engineering and Artificial Intelligence (ILIA)
