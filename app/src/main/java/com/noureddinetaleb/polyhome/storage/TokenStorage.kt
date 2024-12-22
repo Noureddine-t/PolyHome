@@ -11,7 +11,7 @@ private val Context.tokenStore by preferencesDataStore(name = "token");
 /**
  * Token storage class.
  *
- * @property tokenKey the token key.
+ * @property tokenKey The token key.
  * @constructor Creates an instance of TokenStorage with the provided application context.
  */
 class TokenStorage(private var context: Context) {

@@ -210,7 +210,7 @@ class UsersFragment : Fragment() {
     /**
      * Remove to a user access to the owner's house.
      *
-     * @param selectedUser the user login to remove access to.
+     * @param selectedUser The user login to remove access to.
      * @see SendUserLogin
      * @see removeUserAccessSuccess
      * @see Api
@@ -231,8 +231,8 @@ class UsersFragment : Fragment() {
     /**
      * Handle 'remove user access' response then reload users with access.
      *
-     * @param responseCode the response code from the server.
-     * @param deletedUserLogin the user login to remove access to.
+     * @param responseCode The response code from the server.
+     * @param deletedUserLogin The user login to remove access to.
      * @see loadUsersWithAccess
      * @see loadUsers
      * @see removeFirstMatching

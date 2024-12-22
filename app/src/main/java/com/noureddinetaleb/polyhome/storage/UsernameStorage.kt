@@ -11,7 +11,7 @@ private val Context.usernameStore by preferencesDataStore(name = "username");
 /**
  * Username storage class.
  *
- * @property usernameKey the username key.
+ * @property usernameKey The username key.
  * @constructor Creates an instance of UsernameStorage with the provided application context.
  */
 class UsernameStorage(private var context: Context) {
