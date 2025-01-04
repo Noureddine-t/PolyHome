@@ -1,5 +1,18 @@
 # PolyHome - Mobile Application for Home Automation  
 
+## Table of Contents
+- [Project Description](#project-description)
+- [Implemented Features](#implemented-features)
+  - [Core Features](#core-features)
+  - [Bonus Features](#bonus-features)
+- [Download](#download)
+- [Or Install](#or-install)
+- [Screenshots](#screenshots)
+  - [Login and Register](#login-and-register)
+  - [Home Page](#home-page)
+  - [Manage Users and Devices](#manage-users-and-devices)
+- [Author](#author)
+
 ## Project Description  
 PolyHome is an Android home automation application designed to control connected devices in a house, such as rolling shutters, lights, and garage doors. This application leverages a pre-existing API to provide an intuitive interface with features tailored to user needs.  
 
@@ -78,4 +91,4 @@ This project was developed as part of the **Mobile Programming** course at the *
 
 - **Name**: Nour Eddine TALEB  
 - **Year**: 4th year of Engineering Cycle
--  **Specialization**: Software Engineering and Artificial Intelligence (ILIA)
+- **Specialization**: Software Engineering and Artificial Intelligence (ILIA)
