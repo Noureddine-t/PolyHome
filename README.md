@@ -1,5 +1,8 @@
 # PolyHome - Mobile Application for Home Automation  
 
+| [![uBe](./Screenshots/other/UB-Europe.png)](https://www.ube.fr) | Polytech Dijon - 4A - ILIA <br/> Android&nbsp;Mobile&nbsp;App&nbsp;Project&nbsp;<br/><br/> **[ POLYHOME ]**<br/>| [![Polytech Dijon](./Screenshots/other/logo_polytech.png)](https://polytech.ube.fr) |
+|:-------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|-----------------------------------------------------------------------------------------:|
+
 ![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
 ![Gradle](https://img.shields.io/badge/Gradle-02303A.svg?style=for-the-badge&logo=Gradle&logoColor=white)
 
@@ -12,7 +15,6 @@
   - [Login and Register](#login-and-register)
   - [Home Page](#home-page)
   - [Manage Users and Devices](#manage-users-and-devices)
-- [Author](#author)
 
 ## Project Description  
 PolyHome is an Android home automation application designed to control connected devices in a house, such as rolling shutters, lights, and garage doors. This application leverages a pre-existing API to provide an intuitive interface with features tailored to user needs.  
@@ -85,11 +87,3 @@ Download the latest version of the PolyHome application [here](https://github.co
 
 ### Manage Users and Devices
 <img src="./Screenshots/ManageUsers.jpg" alt="Manage Users" width="200"/>          <img src="./Screenshots/ManageDevices.jpg" alt="Manage Devices" width="200"/>
-
-## Author  
-
-This project was developed as part of the **Mobile Programming** course at the **Polytech Dijon School**.  
-
-- **Name**: Nour Eddine TALEB  
-- **Year**: 4th year of Engineering Cycle
-- **Specialization**: Software Engineering and Artificial Intelligence (ILIA)
