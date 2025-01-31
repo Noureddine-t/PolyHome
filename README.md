@@ -1,10 +1,11 @@
 # PolyHome - Mobile Application for Home Automation  
 
+![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-02303A.svg?style=for-the-badge&logo=Gradle&logoColor=white)
+
 ## Table of Contents
 - [Project Description](#project-description)
 - [Implemented Features](#implemented-features)
-  - [Core Features](#core-features)
-  - [Bonus Features](#bonus-features)
 - [Download](#download)
 - [Or Install](#or-install)
 - [Screenshots](#screenshots)
@@ -68,10 +69,10 @@ Download the latest version of the PolyHome application [here](https://github.co
    - **Use the guest account**:  
      - Login: `guest`  
      - Password: `guest`  
-
-4. Make sure to open the virtual model of the house in a browser using the following link:  
-
-[https://polyhome.lesmoulinsdudev.com?houseId=`<houseId>`](https://polyhome.lesmoulinsdudev.com?houseId=<houseId>) Replace `<houseId>` with the corresponding house ID you want to control.
+> [!IMPORTANT]
+>4. Make sure to open the virtual model of the house in a browser using the following link:  
+>
+>[https://polyhome.lesmoulinsdudev.com?houseId=`<houseId>`](https://polyhome.lesmoulinsdudev.com?houseId=<houseId>) Replace `<houseId>` with the corresponding house ID you want to control.
 
 
 ## Screenshots
@@ -87,7 +88,7 @@ Download the latest version of the PolyHome application [here](https://github.co
 
 ## Author  
 
-This project was developed as part of the **Mobile Programming** course at the **University of Burgundy**.  
+This project was developed as part of the **Mobile Programming** course at the **Polytech Dijon School**.  
 
 - **Name**: Nour Eddine TALEB  
 - **Year**: 4th year of Engineering Cycle
